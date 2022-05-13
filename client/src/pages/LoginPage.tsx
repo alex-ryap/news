@@ -1,18 +1,16 @@
-import { Box, Button, Tab, Tabs, TextField, Typography } from '@mui/material';
-import {
-  FC,
-  FormEvent,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { Alert, Box, Snackbar, Tab, Tabs } from '@mui/material';
+import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TabPanel } from '../components/TabPanel';
+import { SignInPanel } from '../components/SignInPanel';
+import { SignUpPanel } from '../components/SignUpPanel';
 import {
   useLoginUserMutation,
   useRegisterUserMutation,
 } from '../store/services/authApi';
+import {
+  isErrorWithMessage,
+  isFetchBaseQueryError,
+} from '../store/services/helpers';
 
 export const LoginPage: FC = () => {
   const [tab, setTab] = useState(0);
@@ -30,41 +28,38 @@ export const LoginPage: FC = () => {
       localStorage.setItem('token', JSON.stringify(loginData?.data?.token));
       navigate('/');
     }
-    if (loginData.isError) {
-      setErrMsg('Invalid login or password');
-    }
   }, [loginData, registerData, navigate]);
 
-  const handleRegister = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      console.log({
-        login,
-        password,
-      });
-      registerUser({ login, password });
+  const handleLogin = useCallback(async () => {
+    try {
+      await loginUser({ login, password }).unwrap();
+      setLogin('');
+      setPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      if (isFetchBaseQueryError(err)) {
+        setErrMsg('error' in err ? err.error : JSON.stringify(err.data));
+      } else if (isErrorWithMessage(err)) {
+        setErrMsg(err.message);
+      }
+    }
+  }, [login, password, loginUser]);
+
+  const handleRegister = useCallback(async () => {
+    try {
+      await registerUser({ login, password });
       setLogin('');
       setPassword('');
       setConfirmPassword('');
       setTab(0);
-    },
-    [login, password, registerUser]
-  );
-
-  const handleLogin = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      console.log({
-        login,
-        password,
-      });
-      loginUser({ login, password });
-      setLogin('');
-      setPassword('');
-      setConfirmPassword('');
-    },
-    [login, password, loginUser]
-  );
+    } catch (err) {
+      if (isFetchBaseQueryError(err)) {
+        setErrMsg('error' in err ? err.error : JSON.stringify(err.data));
+      } else if (isErrorWithMessage(err)) {
+        setErrMsg(err.message);
+      }
+    }
+  }, [login, password, registerUser]);
 
   const handleChangeTab = useCallback(
     (event: SyntheticEvent, newValue: number) => {
@@ -79,6 +74,17 @@ export const LoginPage: FC = () => {
       'aria-controls': `simple-tabpanel-${index}`,
     };
   }
+
+  const handleClose = useCallback(
+    (event?: React.SyntheticEvent | Event, reason?: string) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+
+      setErrMsg('');
+    },
+    []
+  );
 
   return (
     <Box
@@ -95,108 +101,38 @@ export const LoginPage: FC = () => {
         <Tab label="Sign In" {...a11yProps(0)} />
         <Tab label="Sign Up" {...a11yProps(1)} />
       </Tabs>
-      <TabPanel value={tab} index={0}>
-        <Box
-          component="form"
-          onSubmit={handleLogin}
-          sx={{ width: '500px', mt: 1 }}
+
+      <SignInPanel
+        tab={tab}
+        login={login}
+        password={password}
+        changeLogin={setLogin}
+        changePassword={setPassword}
+        handleLogin={handleLogin}
+      />
+      <SignUpPanel
+        tab={tab}
+        login={login}
+        password={password}
+        confirmPassword={confirmPassword}
+        changeLogin={setLogin}
+        changePassword={setPassword}
+        changeConfirmPassword={setConfirmPassword}
+        handleRegister={handleRegister}
+      />
+
+      {(loginData.isError || registerData.isError) && errMsg && (
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={!!errMsg}
+          autoHideDuration={3000}
+          onClose={handleClose}
         >
-          <Typography align="center" component="h1" variant="h4">
-            Sign In
-          </Typography>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Login"
-            name="login"
-            autoFocus
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {loginData.isError && (
-            <Typography
-              align="center"
-              variant="h6"
-              component="h5"
-              color="tomato"
-            >
-              {errMsg}
-            </Typography>
-          )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign In
-          </Button>
-        </Box>
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
-        <Box
-          component="form"
-          onSubmit={handleRegister}
-          sx={{ width: '500px', mt: 1 }}
-        >
-          <Typography align="center" component="h1" variant="h4">
-            Sign Up
-          </Typography>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Login"
-            name="login"
-            autoFocus
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            label="Password"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <TextField
-            error={password !== confirmPassword}
-            helperText={
-              password !== confirmPassword && 'Passwords must be matches'
-            }
-            margin="normal"
-            required
-            fullWidth
-            label="Confirm password"
-            name="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Sign Up
-          </Button>
-        </Box>
-      </TabPanel>
+          <Alert onClose={handleClose} severity="error" variant="filled">
+            {errMsg}
+          </Alert>
+        </Snackbar>
+      )}
     </Box>
   );
 };
