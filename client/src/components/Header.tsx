@@ -12,15 +12,14 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
 import { FC, useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LOGOUT, TOKEN } from '../utils/constants';
+import { useAuth } from '../hooks/useAuth';
 
 const pages = ['Home', 'Add news'];
 
 export const Header: FC = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
-  const navigate = useNavigate();
+  const auth = useAuth();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -31,9 +30,8 @@ export const Header: FC = () => {
   };
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem(TOKEN);
-    navigate(LOGOUT);
-  }, [navigate]);
+    auth.signout();
+  }, [auth]);
 
   return (
     <AppBar position="static">

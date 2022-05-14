@@ -3,14 +3,8 @@ import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SignInPanel } from '../components/SignInPanel';
 import { SignUpPanel } from '../components/SignUpPanel';
-import {
-  useLoginUserMutation,
-  useRegisterUserMutation,
-} from '../store/services/authApi';
-import {
-  isErrorWithMessage,
-  isFetchBaseQueryError,
-} from '../store/services/helpers';
+import { useAuth } from '../hooks/useAuth';
+import { ERROR_TIMEOUT } from '../utils/constants';
 
 export const LoginPage: FC = () => {
   const [tab, setTab] = useState(0);
@@ -20,46 +14,29 @@ export const LoginPage: FC = () => {
   const [errMsg, setErrMsg] = useState('');
 
   const navigate = useNavigate();
-  const [registerUser, registerData] = useRegisterUserMutation();
-  const [loginUser, loginData] = useLoginUserMutation();
+  const auth = useAuth();
 
   useEffect(() => {
-    if (loginData && loginData.data?.token) {
-      localStorage.setItem('token', JSON.stringify(loginData?.data?.token));
+    if (auth.error) {
+      setErrMsg(auth.error);
+      setTimeout(() => setErrMsg(''), ERROR_TIMEOUT);
+    } else if (auth.token) {
       navigate('/');
     }
-  }, [loginData, registerData, navigate]);
+  }, [auth, navigate]);
 
-  const handleLogin = useCallback(async () => {
-    try {
-      await loginUser({ login, password }).unwrap();
-      setLogin('');
-      setPassword('');
-      setConfirmPassword('');
-    } catch (err) {
-      if (isFetchBaseQueryError(err)) {
-        setErrMsg('error' in err ? err.error : JSON.stringify(err.data));
-      } else if (isErrorWithMessage(err)) {
-        setErrMsg(err.message);
-      }
-    }
-  }, [login, password, loginUser]);
+  const handleLogin = useCallback(() => {
+    auth.signin(login, password);
+    setLogin('');
+    setPassword('');
+    setConfirmPassword('');
+  }, [login, password, auth]);
 
-  const handleRegister = useCallback(async () => {
-    try {
-      await registerUser({ login, password });
-      setLogin('');
-      setPassword('');
-      setConfirmPassword('');
-      setTab(0);
-    } catch (err) {
-      if (isFetchBaseQueryError(err)) {
-        setErrMsg('error' in err ? err.error : JSON.stringify(err.data));
-      } else if (isErrorWithMessage(err)) {
-        setErrMsg(err.message);
-      }
-    }
-  }, [login, password, registerUser]);
+  const handleRegister = useCallback(() => {
+    auth.registration(login, password);
+    setConfirmPassword('');
+    setTab(0);
+  }, [login, password, auth]);
 
   const handleChangeTab = useCallback(
     (event: SyntheticEvent, newValue: number) => {
@@ -80,7 +57,6 @@ export const LoginPage: FC = () => {
       if (reason === 'clickaway') {
         return;
       }
-
       setErrMsg('');
     },
     []
@@ -121,11 +97,11 @@ export const LoginPage: FC = () => {
         handleRegister={handleRegister}
       />
 
-      {(loginData.isError || registerData.isError) && errMsg && (
+      {errMsg && (
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
           open={!!errMsg}
-          autoHideDuration={3000}
+          autoHideDuration={ERROR_TIMEOUT}
           onClose={handleClose}
         >
           <Alert onClose={handleClose} severity="error" variant="filled">

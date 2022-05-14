@@ -60,7 +60,9 @@ export const SignUpPanel: FC<SignUpProps> = ({
         <TextField
           error={password !== confirmPassword}
           helperText={
-            password !== confirmPassword ? 'Passwords must be matches' : ''
+            password !== confirmPassword
+              ? 'Passwords must be matches'
+              : 'Password matches'
           }
           margin="normal"
           required

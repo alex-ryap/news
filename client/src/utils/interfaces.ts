@@ -13,3 +13,11 @@ export interface IAuthData {
   login: string;
   password: string;
 }
+
+export interface IAuthContext {
+  token: string;
+  error: string;
+  signin: (login: string, password: string) => void;
+  registration: (login: string, password: string) => void;
+  signout: () => void;
+}
