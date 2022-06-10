@@ -2,12 +2,13 @@ import Pagination from './Pagination'
 export type GetNewsRequest = NewsFilter & NewsSortBy & Pagination
 
 export interface NewsFilter {
-  tags?: string[]
-  onlyNew?: boolean
-  author?: number
+  tags?: string
+  noTagsNoNews?: boolean
+  onlyNew?: string
+  author?: string
   header?: string
-  offset?: number
-  limit?: number
+  offset?: string
+  limit?: string
 }
 
 export type NewsSortBy = {

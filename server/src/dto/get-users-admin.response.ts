@@ -1,5 +1,3 @@
-import { Role } from '../entities/AuthData'
-
 export default class GetUsersAdminResponse {
   readonly id: number
   readonly firstName: string
@@ -10,7 +8,7 @@ export default class GetUsersAdminResponse {
   readonly showFirstName?: boolean
   readonly showLastName?: boolean
   readonly showPhone?: boolean
-  readonly role: Role
+  readonly role: string
   readonly login: string
 
   constructor(props: GetUsersAdminResponse) {

@@ -1,6 +1,6 @@
 import GetUsersAdminResponse from '../dto/get-users-admin.response'
 import UpdateNewsRequest from '../dto/update-news.request'
-import {AuthData, Role} from '../entities/AuthData'
+import {AuthData, getRole, Role} from '../entities/AuthData'
 import {State} from '../entities/News'
 import Storage from './storage'
 import createHttpError from 'http-errors'
@@ -11,7 +11,8 @@ export default class AdminService {
     [...Storage.authorities.values()].forEach(auth => authorities.set(auth.userId, auth))
     const users = [...Storage.users.values()].map(user => (new GetUsersAdminResponse({
       ...user,
-      ...authorities.get(user.id)
+      ...authorities.get(user.id),
+      role: getRole(authorities.get(user.id).role)
     })))
     return users
   }

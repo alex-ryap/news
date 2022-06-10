@@ -1,11 +1,11 @@
 import { AppRouter } from './components/AppRouter';
-import { AuthProvider } from './hoc/AuthProvider';
+import { SnackbarProvider } from './hoc/SnackProvider';
 
 function App() {
   return (
-    <AuthProvider>
+    <SnackbarProvider>
       <AppRouter />
-    </AuthProvider>
+    </SnackbarProvider>
   );
 }
 

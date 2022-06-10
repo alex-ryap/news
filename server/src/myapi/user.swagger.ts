@@ -37,6 +37,8 @@ export const authors = {
             },
         }
     },
+// @ts-ignore
+    security: [ { apiKeyAuth: [] } ],
 }
 
 export const me = {
@@ -92,6 +94,37 @@ export const updateMe = {
             'application/json': {
                 'schema': {
                     '$ref': '#/components/schemas/UserUpdate'
+                },
+            }
+        }
+    },
+// @ts-ignore
+    security: [ { apiKeyAuth: [] } ],
+}
+
+export const updateMyTags = {
+    tags: ['User'],
+    description: `Update user tags`,
+    operationId: 'updateMyTags',
+    responses: {
+        '204': {
+            'description': 'User tags updated',
+        },
+        '401': {
+            'description': 'Unauthorized',
+        },
+        '404': {
+            'description': 'User not found',
+        },
+    },
+    requestBody: {
+        'content': {
+            'application/json': {
+                'schema': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    },
                 },
             }
         }

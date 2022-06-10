@@ -1,42 +1,45 @@
-import { Alert, Box, Snackbar, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SignInPanel } from '../components/SignInPanel';
 import { SignUpPanel } from '../components/SignUpPanel';
-import { useAuth } from '../hooks/useAuth';
-import { ERROR_TIMEOUT } from '../utils/constants';
+import { useSnackbar } from '../hooks/useSnackbar';
+import { clearStatus } from '../store/auth/authSlice';
+import { signIn } from '../store/auth/SignIn';
+import { signUp } from '../store/auth/SignUp';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { a11yProps } from '../utils/commons';
+import { HOME_PAGE } from '../utils/constants';
+
+interface ILocationState {
+  from: string;
+}
 
 export const LoginPage: FC = () => {
-  const [tab, setTab] = useState(0);
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errMsg, setErrMsg] = useState('');
+  const dispatch = useAppDispatch();
+  const { isAuthed, status } = useAppSelector((state) => state.auth);
 
+  const [tab, setTab] = useState<number>(0);
+  const [login, setLogin] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+
+  const snackbar = useSnackbar();
   const navigate = useNavigate();
-  const auth = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
-    if (auth.error) {
-      setErrMsg(auth.error);
-      setTimeout(() => setErrMsg(''), ERROR_TIMEOUT);
-    } else if (auth.token) {
-      navigate('/');
+    if (isAuthed) {
+      const { from } = (location.state as ILocationState) || HOME_PAGE;
+      navigate(from);
     }
-  }, [auth, navigate]);
+  }, [isAuthed, navigate, location.state]);
 
-  const handleLogin = useCallback(() => {
-    auth.signin(login, password);
-    setLogin('');
-    setPassword('');
-    setConfirmPassword('');
-  }, [login, password, auth]);
-
-  const handleRegister = useCallback(() => {
-    auth.registration(login, password);
-    setConfirmPassword('');
-    setTab(0);
-  }, [login, password, auth]);
+  useEffect(() => {
+    if (status) {
+      snackbar.showMessage(status.type, status.message, clearStatus);
+    }
+  }, [status, snackbar]);
 
   const handleChangeTab = useCallback(
     (event: SyntheticEvent, newValue: number) => {
@@ -45,22 +48,25 @@ export const LoginPage: FC = () => {
     []
   );
 
-  function a11yProps(index: number) {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    };
-  }
+  const handleLogin = useCallback(() => {
+    dispatch(
+      signIn({
+        login,
+        password,
+      })
+    );
+  }, [dispatch, login, password]);
 
-  const handleClose = useCallback(
-    (event?: React.SyntheticEvent | Event, reason?: string) => {
-      if (reason === 'clickaway') {
-        return;
-      }
-      setErrMsg('');
-    },
-    []
-  );
+  const handleRegister = useCallback(() => {
+    dispatch(
+      signUp({
+        login,
+        password,
+      })
+    );
+    setConfirmPassword('');
+    setTab(0);
+  }, [dispatch, login, password]);
 
   return (
     <Box
@@ -96,19 +102,6 @@ export const LoginPage: FC = () => {
         changeConfirmPassword={setConfirmPassword}
         handleRegister={handleRegister}
       />
-
-      {errMsg && (
-        <Snackbar
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-          open={!!errMsg}
-          autoHideDuration={ERROR_TIMEOUT}
-          onClose={handleClose}
-        >
-          <Alert onClose={handleClose} severity="error" variant="filled">
-            {errMsg}
-          </Alert>
-        </Snackbar>
-      )}
     </Box>
   );
 };

@@ -19,3 +19,15 @@ export enum Role {
   writer,
   admin
 }
+
+export function getRole(role: Role): string {
+  if (role === Role.reader) {
+    return 'reader'
+  }
+  if (role === Role.writer) {
+    return 'writer'
+  }
+  if (role === Role.admin) {
+    return 'admin'
+  }
+}

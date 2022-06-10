@@ -11,27 +11,74 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NewspaperIcon from '@mui/icons-material/Newspaper';
-import { FC, useCallback, useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { FC, MouseEvent, useCallback, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  HOME_PAGE,
+  POST_CREATE,
+  PROFILE_PAGE,
+  TAGS_PAGE,
+  USERS_PAGE,
+} from '../utils/constants';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { signOut } from '../store/auth/SignOut';
 
-const pages = ['Home', 'Add news'];
+const pages = [
+  {
+    name: 'All News',
+    link: HOME_PAGE,
+    access: ['reader', 'writer', 'admin'],
+  },
+  {
+    name: 'Profile',
+    link: PROFILE_PAGE,
+    access: ['reader', 'writer', 'admin'],
+  },
+  {
+    name: 'Users',
+    link: USERS_PAGE,
+    access: ['admin'],
+  },
+  {
+    name: 'Tags',
+    link: TAGS_PAGE,
+    access: ['admin'],
+  },
+  {
+    name: 'Add News',
+    link: POST_CREATE,
+    access: ['writer', 'admin'],
+  },
+];
 
 export const Header: FC = () => {
+  const dispatch = useAppDispatch();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
-  const auth = useAuth();
+  const navigate = useNavigate();
+  const { user } = useAppSelector((state) => state.user);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (link: string) => {
+    navigate(link);
     setAnchorElNav(null);
   };
 
-  const handleLogout = useCallback(() => {
-    auth.signout();
-  }, [auth]);
+  const handleOpenLink = useCallback(
+    (event: MouseEvent<HTMLAnchorElement>) => {
+      event.preventDefault();
+      navigate('/');
+    },
+    [navigate]
+  );
+
+  const handleSignOut = useCallback(() => {
+    dispatch(signOut({}));
+  }, [dispatch]);
 
   return (
     <AppBar position="static">
@@ -43,6 +90,7 @@ export const Header: FC = () => {
             noWrap
             component="a"
             href="/"
+            onClick={handleOpenLink}
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -85,11 +133,16 @@ export const Header: FC = () => {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
+              {pages
+                .filter((page) => page.access.includes(user.role))
+                .map((page) => (
+                  <MenuItem
+                    key={page.name}
+                    onClick={() => handleCloseNavMenu(page.link)}
+                  >
+                    <Typography textAlign="center">{page.name}</Typography>
+                  </MenuItem>
+                ))}
             </Menu>
           </Box>
           <NewspaperIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -111,26 +164,33 @@ export const Header: FC = () => {
           >
             News
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Button
-              onClick={handleLogout}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Logout
-            </Button>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: { xs: 'none', md: 'flex' },
+              justifyContent: 'center',
+            }}
+          >
+            {pages
+              .filter((page) => page.access.includes(user.role))
+              .map((page) => (
+                <Button
+                  key={page.name}
+                  onClick={() => handleCloseNavMenu(page.link)}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  {page.name}
+                </Button>
+              ))}
           </Box>
+          <IconButton
+            aria-label="Sign out"
+            sx={{ color: 'white' }}
+            onClick={() => handleSignOut()}
+          >
+            <LogoutIcon />
+          </IconButton>
         </Toolbar>
       </Container>
     </AppBar>

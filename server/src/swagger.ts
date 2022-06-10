@@ -1,6 +1,6 @@
 import {login, logout, signup} from './myapi/auth.swagger'
 import {allNews, createNews, deleteNews, myNews, news, read, tags, updateNews} from './myapi/news.swagger'
-import {authors, me, updateMe} from './myapi/user.swagger'
+import {authors, me, updateMe, updateMyTags} from './myapi/user.swagger'
 import {
     adminNewsDelete, adminNewsTagsUpdate,
     adminNewsUpdate,
@@ -45,6 +45,9 @@ export const swaggerDocument = {
             'News': {
                 'type': 'object',
                 'properties': {
+                    'id': {
+                        'type': 'number',
+                    },
                     'header': {
                         'type': 'string',
                     },
@@ -72,6 +75,9 @@ export const swaggerDocument = {
             'User': {
                 'type': 'object',
                 'properties': {
+                    'id': {
+                        'type': 'number',
+                    },
                     'firstName': {
                         'type': 'string',
                     },
@@ -118,12 +124,6 @@ export const swaggerDocument = {
                     'phone': {
                         'type': 'string'
                     },
-                    'tags': {
-                        'type': 'array',
-                            'items': {
-                            'type': 'string'
-                        }
-                    },
                     'showFirstName': {
                         'type': 'boolean',
                     },
@@ -138,6 +138,9 @@ export const swaggerDocument = {
             'UserAdmin': {
                 'type': 'object',
                 'properties': {
+                    'id': {
+                        'type': 'number',
+                    },
                     'firstName': {
                         'type': 'string',
                     },
@@ -185,7 +188,7 @@ export const swaggerDocument = {
     ],
     paths: {
         '/auth/signup': {
-            'put': signup
+            'post': signup
         },
         '/auth/login': {
             'post': login
@@ -195,10 +198,10 @@ export const swaggerDocument = {
         },
         '/news/': {
             'get': news,
-            'put': createNews,
+            'post': createNews,
         },
         '/news/{id}': {
-            'post': updateNews,
+            'put': updateNews,
             'delete': deleteNews,
         },
         '/news/my': {
@@ -218,7 +221,10 @@ export const swaggerDocument = {
         },
         '/user/me': {
             'get': me,
-            'post': updateMe
+            'put': updateMe
+        },
+        '/user/me/tags': {
+            'put': updateMyTags
         },
         '/admin/users': {
             'get': adminUsers
@@ -227,15 +233,15 @@ export const swaggerDocument = {
             'get': adminUserNews,
         },
         '/admin/user/{id}': {
-            'post': adminUserUpdate,
+            'put': adminUserUpdate,
             'delete': adminUserDelete
         },
         '/admin/news/{id}': {
-            'post': adminNewsUpdate,
+            'put': adminNewsUpdate,
             'delete': adminNewsDelete
         },
         '/admin/news/tags': {
-            'post': adminNewsTagsUpdate,
+            'put': adminNewsTagsUpdate,
         },
     },
 }

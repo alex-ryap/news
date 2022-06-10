@@ -6,9 +6,9 @@ interface SignInProps {
   tab: number;
   login: string;
   password: string;
-  changeLogin: Function;
-  changePassword: Function;
-  handleLogin: Function;
+  changeLogin: (login: string) => void;
+  changePassword: (password: string) => void;
+  handleLogin: () => void;
 }
 
 export const SignInPanel: FC<SignInProps> = ({

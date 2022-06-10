@@ -7,10 +7,10 @@ interface SignUpProps {
   login: string;
   password: string;
   confirmPassword: string;
-  changeLogin: Function;
-  changePassword: Function;
-  changeConfirmPassword: Function;
-  handleRegister: Function;
+  changeLogin: (login: string) => void;
+  changePassword: (password: string) => void;
+  changeConfirmPassword: (confirmPassword: string) => void;
+  handleRegister: () => void;
 }
 
 export const SignUpPanel: FC<SignUpProps> = ({

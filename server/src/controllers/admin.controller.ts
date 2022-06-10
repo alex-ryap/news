@@ -30,7 +30,7 @@ router.get('/user/:id/news', (req, res) => {
   res.status(200).json(NewsService.getNewsByUser(id))
 })
 
-router.post('/user/:id', (req, res) => {
+router.put('/user/:id', (req, res) => {
   const id = Number(req.params.id)
   const role = req.body.role
   if(!id || !role) {
@@ -58,14 +58,14 @@ router.delete('/news/:id', (req, res) => {
   res.sendStatus(204)
 })
 
-router.post<any, any, any, string[]>('/news/tags', (req, res) => {
+router.put<any, any, any, string[]>('/news/tags', (req, res) => {
 
   const tags = req.body
   AdminService.updateTags(tags)
   res.sendStatus(204)
 })
 
-router.post<{id: number}, any, any, UpdateNewsRequest>('/news/:id', (req, res) => {
+router.put<{id: number}, any, any, UpdateNewsRequest>('/news/:id', (req, res) => {
   const id = Number(req.params.id)
   if(!id) {
     throw new createHttpError.BadRequest('Required: id')
