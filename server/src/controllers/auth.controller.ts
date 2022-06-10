@@ -9,7 +9,7 @@ router.use(function timeLog(req, res, next) {
   next()
 })
 
-router.put('/signup', (req, res) => {
+router.post('/signup', (req, res) => {
   const {login, password} = req.body
   if(!login || !password) {
     throw new createHttpError.BadRequest()

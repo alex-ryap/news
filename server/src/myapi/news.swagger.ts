@@ -32,10 +32,14 @@ export const news = {
         {
             'in': 'query',
             'name': 'tags',
-            'type': 'array',
-            'items': {
-                'type': 'string'
-            }
+            'type': 'string',
+            'description': 'tags separated by comma, example: "news, games"',
+        },
+        {
+            'in': 'query',
+            'name': 'noTagsNoNews',
+            'type': 'boolean',
+            'description': 'if true, then news will be filtered by empty tags (you get empty list if tags are empty)'
         },
         {
             'in': 'query',
@@ -56,11 +60,13 @@ export const news = {
             'in': 'query',
             'name': 'offset',
             'type': 'number',
+            'description': 'offset from first news item in the list, e.g. if offset=10, then news0, ... news9 will be skipped'
         },
         {
             'in': 'query',
             'name': 'limit',
             'type': 'number',
+            'description': 'count of news awaited'
         },
     ],
     responses: {
@@ -144,6 +150,8 @@ export const tags = {
             },
         },
     },
+// @ts-ignore
+    security: [ { apiKeyAuth: [] } ],
 }
 
 export const read = {
@@ -183,7 +191,7 @@ export const read = {
 
 export const createNews = {
     tags: ['News'],
-    description: `Create news. Allowed for author and admin roles only.`,
+    description: `Create news. Allowed for author and admin roles only. Send date in timestamp for correct parsing`,
     operationId: 'newsCreate',
     requestBody: {
         'content': {

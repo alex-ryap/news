@@ -9,7 +9,7 @@ export default class GetMeResponse {
   readonly showFirstName?: boolean
   readonly showLastName?: boolean
   readonly showPhone?: boolean
-  readonly role: Role
+  readonly role: string
 
   constructor(props: GetMeResponse) {
     this.firstName = props.firstName

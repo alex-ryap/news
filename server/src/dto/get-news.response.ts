@@ -1,4 +1,5 @@
 export default class NewsResponse {
+  id: number
   header: string
   description: string
   tags: string[]
@@ -7,6 +8,7 @@ export default class NewsResponse {
   authorLastName?: string
 
   constructor(props: NewsResponse) {
+    this.id = props.id
     this.header = props.header
     this.description = props.description
     this.tags = props.tags

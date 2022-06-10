@@ -1,0 +1,27 @@
+{
+  "name": "news-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"yarn --cwd client start\" \"yarn --cwd server start\"",
+    "build": "yarn --cwd client build && yarn --cwd server build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koshkinoko-hana/news-be.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koshkinoko-hana/news-be/issues"
+  },
+  "homepage": "https://github.com/koshkinoko-hana/news-be#readme",
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "concurrently": "^7.1.0"
+  }
+}
