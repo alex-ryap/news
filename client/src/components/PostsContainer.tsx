@@ -4,22 +4,27 @@ import { Filter } from './Filter';
 
 interface IPostsContainer {
   isLoading: boolean;
-  filter?: boolean;
-  widgets?: ReactNode;
+  left?: ReactNode;
+  right?: ReactNode;
   children: ReactNode;
 }
 
 export const PostsContainer: FC<IPostsContainer> = ({
   isLoading,
-  filter,
-  widgets,
+  left,
+  right,
   children,
 }) => {
   return (
     <Box
-      sx={{ display: 'grid', gridTemplateColumns: '300px 1fr 200px', gap: 4 }}
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '300px 1fr 200px',
+        gap: 4,
+        alignItems: 'flex-start',
+      }}
     >
-      <Box>{filter && <Filter />}</Box>
+      <Box>{left}</Box>
       <Grid container rowSpacing={2} direction="column" flexGrow={1}>
         {isLoading ? (
           <Grid item alignSelf="center">
@@ -30,7 +35,7 @@ export const PostsContainer: FC<IPostsContainer> = ({
         )}
       </Grid>
       <Grid container justifyContent="center">
-        {widgets && <Grid item>{widgets}</Grid>}
+        {right}
       </Grid>
     </Box>
   );

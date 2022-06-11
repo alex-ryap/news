@@ -10,6 +10,7 @@ import {
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IUserPost } from '../store/admin/adminSlice';
+import { PostState } from '../utils/enums';
 import { IPost } from '../utils/interfaces';
 
 interface IPostItemProps {
@@ -64,7 +65,19 @@ export const PostItem: FC<IPostItemProps> = ({
             </Grid>
             {post?.state && (
               <Grid item>
-                <Typography variant="body1">{post.state}</Typography>
+                <Typography
+                  variant="body1"
+                  padding="4px 8px"
+                  border={`1px solid ${
+                    post.state === PostState.PUBLISHED ? '#4caf50' : '#f44336'
+                  }`}
+                  borderRadius={1}
+                  color={
+                    post.state === PostState.PUBLISHED ? '#4caf50' : '#f44336'
+                  }
+                >
+                  {post.state}
+                </Typography>
               </Grid>
             )}
           </Grid>

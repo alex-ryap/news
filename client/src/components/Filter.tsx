@@ -24,6 +24,12 @@ import { getAuthors } from '../store/user/getAuthors';
 import { getPosts } from '../store/posts/getPosts';
 import { getPostsTags } from '../store/posts/getPostsTags';
 
+interface IFilterParams {
+  tags?: string;
+  header?: string;
+  author?: number;
+}
+
 export const Filter: FC = () => {
   const dispatch = useAppDispatch();
   const { authors } = useAppSelector((state) => state.user);
@@ -64,11 +70,14 @@ export const Filter: FC = () => {
   };
 
   const handleAcceptFilters = () => {
+    const filter: IFilterParams = {};
+    selectedTags.length && (filter.tags = selectedTags.join(', '));
+    containedText && (filter.header = containedText);
+    author && (filter.author = parseInt(author));
+
     dispatch(
       getPosts({
-        tags: selectedTags.join(', '),
-        header: containedText,
-        author,
+        ...filter,
       })
     );
   };
@@ -113,7 +122,7 @@ export const Filter: FC = () => {
               )
             )}
           </Grid>
-          <Grid item container direction="column" rowSpacing={1}>
+          <Grid item container direction="column" rowSpacing={2}>
             <Grid item>
               <FormControl fullWidth size="small">
                 <InputLabel id="author">Author</InputLabel>

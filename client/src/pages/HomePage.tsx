@@ -8,6 +8,7 @@ import { PostItem } from '../components/PostItem';
 import { getAllPosts } from '../store/posts/getAllPosts';
 import { useNavigate } from 'react-router';
 import { CAN_WRITE_POSTS, POST_CREATE } from '../utils/constants';
+import { Filter } from '../components/Filter';
 
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
@@ -31,8 +32,8 @@ export const HomePage: FC = () => {
   return (
     <PostsContainer
       isLoading={isLoading}
-      filter
-      widgets={
+      left={<Filter />}
+      right={
         CAN_WRITE_POSTS.includes(user.role) && (
           <Button variant="outlined" onClick={() => navigate(POST_CREATE)}>
             Create post

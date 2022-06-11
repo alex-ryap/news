@@ -1,5 +1,6 @@
 import { Button, Grid, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
+import { Filter } from '../components/Filter';
 import { ModalSubscribes } from '../components/ModalSubscribes';
 import { PostItem } from '../components/PostItem';
 import { PostsContainer } from '../components/PostsContainer';
@@ -34,8 +35,8 @@ export const SubscriptionsPage: FC = () => {
   return (
     <PostsContainer
       isLoading={isLoading}
-      filter
-      widgets={
+      left={<Filter />}
+      right={
         user.tags.length > 0 && (
           <Button
             variant="outlined"

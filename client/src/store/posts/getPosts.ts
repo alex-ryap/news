@@ -8,7 +8,7 @@ interface QueryParams {
   tags?: string;
   onlyNew?: boolean;
   noTagsNoNews?: boolean;
-  author?: string;
+  author?: number;
   header?: string;
   offset?: number;
   limit?: number;
@@ -23,7 +23,6 @@ export const getPosts = createAsyncThunk<
   }
 >('news/getPosts', async (params, { rejectWithValue, getState }) => {
   try {
-    debugger;
     const { token } = getState().auth;
     const response = await axios.get(SERVER_ADDR + 'news', {
       headers: {
