@@ -43,7 +43,7 @@ export const privateRoutes: IRoute[] = [
   {
     path: POST_ITEM_PAGE,
     component: PostPage,
-    access: ['writer', 'admin'],
+    access: ['reader', 'writer', 'admin'],
   },
   {
     path: POST_ITEM_EDIT_PAGE,

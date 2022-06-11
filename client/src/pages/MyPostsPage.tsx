@@ -28,6 +28,9 @@ export const MyPostsPage: FC = () => {
         )
       }
     >
+      <Grid item>
+        <Typography variant="h3">My posts</Typography>
+      </Grid>
       {postsList.length ? (
         postsList.map((post, idx) => (
           <PostItem
