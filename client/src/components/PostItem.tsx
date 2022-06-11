@@ -9,12 +9,13 @@ import {
 } from '@mui/material';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IUserPost } from '../store/admin/adminSlice';
 import { IPost } from '../utils/interfaces';
 
 interface IPostItemProps {
   id: number;
   isEditable?: boolean;
-  post: IPost;
+  post: IPost | IUserPost;
 }
 
 export const PostItem: FC<IPostItemProps> = ({
@@ -69,12 +70,12 @@ export const PostItem: FC<IPostItemProps> = ({
           </Grid>
           <Typography variant="h5">{post.header}</Typography>
           <Typography variant="subtitle1">{post.description}</Typography>
-          {post?.authorFirstName && post?.authorLastName && (
-            <Typography
-              mt={2}
-              variant="subtitle2"
-            >{`${post?.authorFirstName} ${post?.authorLastName}`}</Typography>
-          )}
+          {(post as IPost)?.authorFirstName &&
+            (post as IPost)?.authorLastName && (
+              <Typography mt={2} variant="subtitle2">{`${
+                (post as IPost)?.authorFirstName
+              } ${(post as IPost)?.authorLastName}`}</Typography>
+            )}
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
           <Button variant="text" onClick={handleOpenPost}>

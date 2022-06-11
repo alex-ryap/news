@@ -12,7 +12,7 @@ export const PrivateRoute: FC<PrivateRouteProps> = ({ access, children }) => {
   const { isAuthed } = useAppSelector((state) => state.auth);
   const { user } = useAppSelector((state) => state.user);
   const location = useLocation();
-
+  debugger;
   if (!isAuthed) {
     return (
       <Navigate to={LOGIN_PAGE} state={{ from: location.pathname }} replace />

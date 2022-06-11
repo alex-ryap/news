@@ -5,6 +5,8 @@ export const USER_ROLES = {
   reader: 'Reader',
 };
 
+export const CAN_WRITE_POSTS = ['writer', 'admin'];
+
 // TIMEOUTS
 export const SNACK_TIMEOUT = 3000;
 
@@ -18,10 +20,12 @@ export const SERVER_ADDR = 'http://localhost:3001/';
 export const LOGIN_PAGE = '/login';
 
 export const HOME_PAGE = '/';
+export const SUBSCRIPTIONS_PAGE = '/subscriptions';
+export const MY_POSTS_PAGE = '/posts/my';
 export const POST_CREATE = '/posts/new';
 export const POST_ITEM_PAGE = '/posts/:id';
 export const POST_ITEM_EDIT_PAGE = '/posts/:id/edit';
 
 export const PROFILE_PAGE = '/profile';
-export const USERS_PAGE = '/users';
-export const TAGS_PAGE = '/tags';
+export const ADMIN_PAGE = '/admin';
+export const ADMIN_USER_POSTS = '/admin/:id/posts';

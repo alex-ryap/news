@@ -22,7 +22,7 @@ export interface IUserData {
   login: string;
 }
 
-export interface IUserPosts {
+export interface IUserPost {
   id: number;
   header: string;
   description: string;
@@ -33,7 +33,7 @@ export interface IUserPosts {
 
 interface IAdminState {
   users: IUserData[];
-  userPosts: IUserPosts[];
+  userPosts: IUserPost[];
   isLoading: boolean;
   status: IRequestStatus | null;
 }
@@ -96,7 +96,7 @@ export const adminSlice = createSlice({
       })
       .addCase(
         getUserPosts.fulfilled,
-        (state, action: PayloadAction<IUserPosts[]>) => {
+        (state, action: PayloadAction<IUserPost[]>) => {
           state.isLoading = false;
           state.userPosts = action.payload;
         }

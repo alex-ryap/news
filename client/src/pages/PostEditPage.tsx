@@ -26,6 +26,7 @@ import { useSnackbar } from '../hooks/useSnackbar';
 import { clearStatus } from '../store/posts/postsSlice';
 import { HOME_PAGE } from '../utils/constants';
 import { PostState, UserRole } from '../utils/enums';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 interface ILocationState {
   post: IPost;
@@ -84,11 +85,20 @@ export const PostEditPage: FC = () => {
   };
 
   return (
-    <Box sx={{ margin: '0 auto', maxWidth: '600px' }}>
+    <Box sx={{ margin: '0 auto', maxWidth: '800px' }}>
       <Grid container direction="column" rowSpacing={2}>
         <Grid item>
-          <Typography variant="h4">
-            {post?.header ? 'Edit post' : 'Create post'}
+          <Button
+            startIcon={<ArrowBackIosNewIcon />}
+            variant="outlined"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </Button>
+        </Grid>
+        <Grid item alignSelf="flex-end">
+          <Typography variant="h3">
+            {post?.header ? 'Edit post' : 'Create new post'}
           </Typography>
         </Grid>
         <Grid item>

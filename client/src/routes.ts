@@ -1,17 +1,21 @@
+import { AdminPage } from './pages/AdminPage';
 import { HomePage } from './pages/HomePage';
+import { MyPostsPage } from './pages/MyPostsPage';
 import { PostEditPage } from './pages/PostEditPage';
 import { PostPage } from './pages/PostPage';
 import { ProfilePage } from './pages/ProfilePage';
-import { TagsPage } from './pages/TagsPage';
-import { UsersPage } from './pages/UsersPage';
+import { SubscriptionsPage } from './pages/SubscriptionsPage';
+import { UserPostsPage } from './pages/UserPostsPage';
 import {
+  ADMIN_PAGE,
+  ADMIN_USER_POSTS,
   HOME_PAGE,
+  MY_POSTS_PAGE,
   POST_CREATE,
   POST_ITEM_EDIT_PAGE,
   POST_ITEM_PAGE,
   PROFILE_PAGE,
-  TAGS_PAGE,
-  USERS_PAGE,
+  SUBSCRIPTIONS_PAGE,
 } from './utils/constants';
 import { IRoute } from './utils/interfaces';
 
@@ -20,6 +24,16 @@ export const privateRoutes: IRoute[] = [
     path: HOME_PAGE,
     component: HomePage,
     access: ['reader', 'writer', 'admin'],
+  },
+  {
+    path: SUBSCRIPTIONS_PAGE,
+    component: SubscriptionsPage,
+    access: ['reader', 'writer', 'admin'],
+  },
+  {
+    path: MY_POSTS_PAGE,
+    component: MyPostsPage,
+    access: ['writer', 'admin'],
   },
   {
     path: POST_CREATE,
@@ -42,13 +56,13 @@ export const privateRoutes: IRoute[] = [
     access: ['reader', 'writer', 'admin'],
   },
   {
-    path: USERS_PAGE,
-    component: UsersPage,
+    path: ADMIN_PAGE,
+    component: AdminPage,
     access: ['admin'],
   },
   {
-    path: TAGS_PAGE,
-    component: TagsPage,
+    path: ADMIN_USER_POSTS,
+    component: UserPostsPage,
     access: ['admin'],
   },
 ];

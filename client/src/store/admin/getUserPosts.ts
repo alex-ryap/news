@@ -3,10 +3,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
 import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
-import { IUserPosts } from './adminSlice';
+import { IUserPost } from './adminSlice';
 
 export const getUserPosts = createAsyncThunk<
-  IUserPosts[],
+  IUserPost[],
   number,
   {
     state: RootState;

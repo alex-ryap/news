@@ -1,26 +1,26 @@
-import { Tab, Tabs } from '@mui/material';
-import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { TabAllPosts } from '../components/TabAllPosts';
-import { TabPanel } from '../components/TabPanel';
-import { a11yProps } from '../utils/commons';
-import { TabMyPosts } from '../components/TabMyPosts';
+import { Box, Button, Grid, Typography } from '@mui/material';
+import { FC, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { clearStatus } from '../store/user/userSlice';
 import { useSnackbar } from '../hooks/useSnackbar';
-import { getPostsTags } from '../store/posts/getPostsTags';
-import { TabSubscriptions } from '../components/TabSubscriptions';
-
-const canWritePosts = ['writer', 'admin'];
+import { clearStatus } from '../store/posts/postsSlice';
+import { PostsContainer } from '../components/PostsContainer';
+import { PostItem } from '../components/PostItem';
+import { getAllPosts } from '../store/posts/getAllPosts';
+import { useNavigate } from 'react-router';
+import { CAN_WRITE_POSTS, POST_CREATE } from '../utils/constants';
 
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const snackbar = useSnackbar();
-  const { user, status } = useAppSelector((state) => state.user);
-  const [tab, setTab] = useState<number>(0);
+  const { user } = useAppSelector((state) => state.user);
+  const { postsList, isLoading, status } = useAppSelector(
+    (state) => state.posts
+  );
 
   useEffect(() => {
-    dispatch(getPostsTags());
-  }, [dispatch]);
+    dispatch(getAllPosts());
+  }, []);
 
   useEffect(() => {
     if (status) {
@@ -28,45 +28,35 @@ export const HomePage: FC = () => {
     }
   }, [status, snackbar]);
 
-  const handleChangeTab = useCallback(
-    (event: SyntheticEvent, newValue: number) => {
-      setTab(newValue);
-    },
-    []
-  );
-
   return (
-    <>
-      <Tabs value={tab} onChange={handleChangeTab}>
-        <Tab
-          label="All news"
-          {...a11yProps(0)}
-          sx={{ flexGrow: 1, maxWidth: 'none' }}
-        />
-        <Tab
-          label="Subscriptions"
-          {...a11yProps(1)}
-          sx={{ flexGrow: 1, maxWidth: 'none' }}
-        />
-        {canWritePosts.includes(user.role) && (
-          <Tab
-            label="My news"
-            {...a11yProps(2)}
-            sx={{ flexGrow: 1, maxWidth: 'none' }}
-          />
-        )}
-      </Tabs>
-      <TabPanel value={tab} index={0}>
-        <TabAllPosts />
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
-        <TabSubscriptions />
-      </TabPanel>
-      {canWritePosts.includes(user.role) && (
-        <TabPanel value={tab} index={2}>
-          <TabMyPosts />
-        </TabPanel>
+    <PostsContainer
+      isLoading={isLoading}
+      filter
+      widgets={
+        CAN_WRITE_POSTS.includes(user.role) && (
+          <Button variant="outlined" onClick={() => navigate(POST_CREATE)}>
+            Create post
+          </Button>
+        )
+      }
+    >
+      <Grid item>
+        <Typography variant="h3">Recent news</Typography>
+      </Grid>
+      {postsList.length ? (
+        postsList.map((post, idx) => (
+          <PostItem key={post.id || idx} post={post} id={post.id || idx} />
+        ))
+      ) : (
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          textAlign="center"
+          mt={5}
+        >
+          No news
+        </Typography>
       )}
-    </>
+    </PostsContainer>
   );
 };

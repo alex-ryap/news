@@ -8,6 +8,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
 import { IUserData } from '../store/admin/adminSlice';
@@ -18,6 +19,7 @@ import { useAppDispatch } from '../store/hooks';
 import { deleteUser } from '../store/admin/deleteUser';
 import { ModalUserRole } from './ModalUserRole';
 import { updateUserRole } from '../store/admin/updateUserRole';
+import { useNavigate } from 'react-router';
 
 interface IUserListProps {
   usersList: IUserData[];
@@ -25,6 +27,7 @@ interface IUserListProps {
 
 export const UsersList: FC<IUserListProps> = ({ usersList }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [selectedUser, setSelectedUser] = useState<IUserData | null>(null);
@@ -98,19 +101,31 @@ export const UsersList: FC<IUserListProps> = ({ usersList }) => {
                   <TableCell>
                     <Grid container columnSpacing={1} justifyContent="center">
                       <Grid item>
-                        <IconButton>
-                          <ArticleIcon />
-                        </IconButton>
+                        <Tooltip title="Show user posts">
+                          <IconButton
+                            onClick={() =>
+                              navigate(`/admin/${user.id}/posts`, {
+                                state: { user },
+                              })
+                            }
+                          >
+                            <ArticleIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Grid>
                       <Grid item>
-                        <IconButton onClick={() => handleOpenModal(user)}>
-                          <EditIcon />
-                        </IconButton>
+                        <Tooltip title="Change user role">
+                          <IconButton onClick={() => handleOpenModal(user)}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Grid>
                       <Grid item>
-                        <IconButton onClick={() => handleUserDelete(user.id)}>
-                          <DeleteIcon />
-                        </IconButton>
+                        <Tooltip title="Delete user">
+                          <IconButton onClick={() => handleUserDelete(user.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Grid>
                     </Grid>
                   </TableCell>

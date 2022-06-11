@@ -13,8 +13,9 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { getPostsTags } from '../store/posts/getPostsTags';
 import { updateUserTags } from '../store/user/updateUserTags';
 
 interface ModalSubscribeProps {
@@ -30,6 +31,12 @@ export const ModalSubscribes: FC<ModalSubscribeProps> = ({
   const { user } = useAppSelector((state) => state.user);
   const { tags } = useAppSelector((state) => state.posts);
   const [selectedTags, setSelectedTags] = useState<string[]>(user.tags);
+
+  useEffect(() => {
+    if (!tags.length) {
+      dispatch(getPostsTags());
+    }
+  }, [dispatch, tags]);
 
   const handleChangeTags = (event: SelectChangeEvent<typeof tags>) => {
     const {
