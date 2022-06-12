@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { SERVER_ADDR } from '../../utils/constants';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IError } from '../../utils/interfaces';
 import { IUserData } from './authSlice';
+import { handleError } from '../../utils/commons';
+
+const errorsMessages = new Map<number, string>();
+errorsMessages.set(400, 'User with the login already exists');
 
 export const signUp = createAsyncThunk<
   string,
@@ -17,6 +20,6 @@ export const signUp = createAsyncThunk<
     });
     return 'Success register user';
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error, errorsMessages));
   }
 });

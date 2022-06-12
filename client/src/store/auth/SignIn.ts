@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { SERVER_ADDR, TOKEN } from '../../utils/constants';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IError } from '../../utils/interfaces';
 import { IUserData } from './authSlice';
+import { handleError } from '../../utils/commons';
+
+const errorsMessages = new Map<number, string>();
+errorsMessages.set(401, 'Wrong login or password');
 
 export const signIn = createAsyncThunk<
   string,
@@ -21,6 +24,6 @@ export const signIn = createAsyncThunk<
     }
     return token;
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error, errorsMessages));
   }
 });

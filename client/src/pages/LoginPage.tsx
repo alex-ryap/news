@@ -10,6 +10,7 @@ import { signUp } from '../store/auth/SignUp';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { a11yProps } from '../utils/commons';
 import { HOME_PAGE } from '../utils/constants';
+import { RequestStatus } from '../utils/enums';
 
 interface ILocationState {
   from: string;
@@ -57,15 +58,21 @@ export const LoginPage: FC = () => {
     );
   }, [dispatch, login, password]);
 
-  const handleRegister = useCallback(() => {
-    dispatch(
+  const handleRegister = useCallback(async () => {
+    const result = await dispatch(
       signUp({
         login,
         password,
       })
     );
-    setConfirmPassword('');
-    setTab(0);
+
+    if (result.type.includes(RequestStatus.SUCCESS)) {
+      setTab(0);
+    } else {
+      setLogin('');
+      setPassword('');
+      setConfirmPassword('');
+    }
   }, [dispatch, login, password]);
 
   return (

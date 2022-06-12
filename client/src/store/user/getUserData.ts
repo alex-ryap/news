@@ -3,6 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
 import { IUser } from '../../utils/interfaces';
 import { RootState } from '../store';
+import { handleError } from '../../utils/commons';
 
 export const getUserData = createAsyncThunk<
   IUser,
@@ -21,6 +22,6 @@ export const getUserData = createAsyncThunk<
     });
     return response.data?.me;
   } catch (e) {
-    return rejectWithValue("Can't load user data");
+    return rejectWithValue(handleError(e as Error));
   }
 });

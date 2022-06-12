@@ -4,6 +4,11 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export enum RequestStatus {
+  SUCCESS = 'fulfilled',
+  ERROR = 'rejected',
+}
+
 export enum StatusType {
   SUCCESS = 'success',
   INFO = 'info',

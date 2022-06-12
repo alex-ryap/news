@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
+import { handleError } from '../../utils/commons';
 
 export const getPostsTags = createAsyncThunk<
   string[],
@@ -21,6 +21,6 @@ export const getPostsTags = createAsyncThunk<
     });
     return response.data;
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error));
   }
 });

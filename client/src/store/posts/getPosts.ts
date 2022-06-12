@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError, IPost } from '../../utils/interfaces';
+import { IPost } from '../../utils/interfaces';
 import { RootState } from '../store';
+import { handleError } from '../../utils/commons';
 
 interface QueryParams {
   tags?: string;
@@ -34,6 +35,6 @@ export const getPosts = createAsyncThunk<
     });
     return response.data.news.list;
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error));
   }
 });

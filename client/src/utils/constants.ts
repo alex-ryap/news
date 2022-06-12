@@ -6,9 +6,11 @@ export const USER_ROLES = {
 };
 
 export const CAN_WRITE_POSTS = ['writer', 'admin'];
-
-// TIMEOUTS
 export const SNACK_TIMEOUT = 3000;
+export const ERRORS = new Map();
+ERRORS.set(401, 'You unauthorized');
+ERRORS.set(403, 'Forbidden for current role');
+ERRORS.set(404, 'Not found');
 
 // LOCAL STORAGE
 export const TOKEN = 'token';
