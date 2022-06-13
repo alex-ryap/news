@@ -7,8 +7,16 @@ export interface IRoute {
   access: string[];
 }
 
-export interface IError {
-  message: string;
+export interface IFilterParams {
+  tags?: string;
+  header?: string;
+  author?: number;
+}
+
+export interface ISearchParams {
+  tags?: string;
+  header?: string;
+  author?: string;
 }
 
 export interface IRequestStatus {

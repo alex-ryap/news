@@ -13,7 +13,6 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -23,31 +22,39 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { getAuthors } from '../store/user/getAuthors';
 import { getPosts } from '../store/posts/getPosts';
 import { getPostsTags } from '../store/posts/getPostsTags';
+import { IFilterParams, ISearchParams } from '../utils/interfaces';
+import { URLSearchParamsInit } from 'react-router-dom';
 
-interface IFilterParams {
-  tags?: string;
-  header?: string;
-  author?: number;
+interface IFilterProps {
+  tags: string[];
+  queryTags: string;
+  queryAuthor: string;
+  queryHeader: string;
+  setSearchParams: (params: URLSearchParamsInit) => void;
 }
 
-export const Filter: FC = () => {
+export const Filter: FC<IFilterProps> = ({
+  tags,
+  queryTags,
+  queryAuthor,
+  queryHeader,
+  setSearchParams,
+}) => {
   const dispatch = useAppDispatch();
   const { authors } = useAppSelector((state) => state.user);
-  const { tags } = useAppSelector((state) => state.posts);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [containedText, setContainedText] = useState<string>('');
-  const [isRead, setIsRead] = useState<boolean>(false);
-  const [author, setAuthor] = useState<string>('');
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    queryTags ? queryTags.split(',') : []
+  );
+  const [header, setHeader] = useState<string>(queryHeader);
+  // const [isRead, setIsRead] = useState<boolean>(false);
+  const [author, setAuthor] = useState<string>(queryAuthor);
   const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     if (!authors.length) {
       dispatch(getAuthors());
     }
-    if (!tags.length) {
-      dispatch(getPostsTags());
-    }
-  }, [dispatch, authors, tags]);
+  }, [dispatch, authors]);
 
   const handleAddTag = (tag: string) => {
     setSelectedTags([...selectedTags, tag]);
@@ -58,28 +65,25 @@ export const Filter: FC = () => {
   };
 
   const handleSelectAuthor = (event: SelectChangeEvent) => {
-    setAuthor(event.target.value);
+    setAuthor(event.target.value.toString());
   };
 
   const handleClearFilters = () => {
     setSelectedTags([]);
     setAuthor('');
-    setIsRead(false);
-    setContainedText('');
-    dispatch(getPosts({}));
+    // setIsRead(false);
+    setHeader('');
+    setSearchParams({ page: '1' });
   };
 
   const handleAcceptFilters = () => {
-    const filter: IFilterParams = {};
-    selectedTags.length && (filter.tags = selectedTags.join(', '));
-    containedText && (filter.header = containedText);
-    author && (filter.author = parseInt(author));
+    const queryParams: ISearchParams = {};
 
-    dispatch(
-      getPosts({
-        ...filter,
-      })
-    );
+    selectedTags.length && (queryParams.tags = selectedTags.join(','));
+    header && (queryParams.header = header);
+    author && (queryParams.author = author);
+
+    setSearchParams({ page: '1', ...queryParams });
   };
 
   return (
@@ -150,11 +154,11 @@ export const Filter: FC = () => {
                 label="Contain text"
                 variant="outlined"
                 size="small"
-                value={containedText}
-                onChange={(e) => setContainedText(e.target.value)}
+                value={header}
+                onChange={(e) => setHeader(e.target.value)}
               />
             </Grid>
-            <Grid item>
+            {/* <Grid item>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -164,7 +168,7 @@ export const Filter: FC = () => {
                 }
                 label="Readed posts"
               />
-            </Grid>
+            </Grid> */}
           </Grid>
         </Grid>
       </AccordionDetails>

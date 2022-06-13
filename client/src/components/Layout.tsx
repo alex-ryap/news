@@ -7,7 +7,7 @@ export const Layout: FC = () => {
   return (
     <>
       <Header />
-      <Container maxWidth="xl" sx={{ mt: 2 }}>
+      <Container maxWidth="xl" sx={{ mt: 2, mb: 4 }}>
         <Outlet />
       </Container>
     </>

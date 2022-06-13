@@ -5,12 +5,13 @@ import { createPost } from './createPost';
 import { deletePost } from './deletePost';
 import { getAllPosts } from './getAllPosts';
 import { getMyPosts } from './getMyPosts';
-import { getPosts } from './getPosts';
+import { getPosts, IPostsResponse } from './getPosts';
 import { getPostsTags } from './getPostsTags';
 import { updatePost } from './updatePost';
 
 interface IPostsState {
   postsList: IPost[];
+  totalPosts: number;
   tags: string[];
   isLoading: boolean;
   status: IRequestStatus | null;
@@ -18,6 +19,7 @@ interface IPostsState {
 
 const initialState: IPostsState = {
   postsList: [],
+  totalPosts: 0,
   tags: [],
   isLoading: false,
   status: null,
@@ -46,10 +48,14 @@ export const postsSlice = createSlice({
         state.isLoading = true;
         state.status = null;
       })
-      .addCase(getPosts.fulfilled, (state, action: PayloadAction<IPost[]>) => {
-        state.isLoading = false;
-        state.postsList = action.payload;
-      })
+      .addCase(
+        getPosts.fulfilled,
+        (state, action: PayloadAction<IPostsResponse>) => {
+          state.isLoading = false;
+          state.postsList = action.payload.list;
+          state.totalPosts = action.payload.total;
+        }
+      )
       .addCase(getPosts.rejected, (state, action) => {
         state.isLoading = false;
         state.status = {

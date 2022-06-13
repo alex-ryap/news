@@ -5,6 +5,8 @@ export const USER_ROLES = {
   reader: 'Reader',
 };
 
+export const POSTS_PER_PAGE = 10;
+
 export const CAN_WRITE_POSTS = ['writer', 'admin'];
 export const SNACK_TIMEOUT = 3000;
 export const ERRORS = new Map();

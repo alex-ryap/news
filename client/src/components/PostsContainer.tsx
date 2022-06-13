@@ -1,6 +1,5 @@
 import { Box, CircularProgress, Grid } from '@mui/material';
 import { FC, ReactNode } from 'react';
-import { Filter } from './Filter';
 
 interface IPostsContainer {
   isLoading: boolean;
@@ -25,7 +24,7 @@ export const PostsContainer: FC<IPostsContainer> = ({
       }}
     >
       <Box>{left}</Box>
-      <Grid container rowSpacing={2} direction="column" flexGrow={1}>
+      <Grid container rowSpacing={3} direction="column" flexGrow={1}>
         {isLoading ? (
           <Grid item alignSelf="center">
             <CircularProgress />

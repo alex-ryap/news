@@ -15,8 +15,13 @@ interface QueryParams {
   limit?: number;
 }
 
+export interface IPostsResponse {
+  list: IPost[];
+  total: number;
+}
+
 export const getPosts = createAsyncThunk<
-  IPost[],
+  IPostsResponse,
   QueryParams,
   {
     state: RootState;
@@ -33,7 +38,10 @@ export const getPosts = createAsyncThunk<
         ...params,
       },
     });
-    return response.data.news.list;
+
+    console.log(response.data);
+
+    return response.data.news;
   } catch (e) {
     return rejectWithValue(handleError(e as Error));
   }

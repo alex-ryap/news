@@ -1,27 +1,66 @@
-import { Box, Button, Grid, Typography } from '@mui/material';
-import { FC, useEffect } from 'react';
+import { Button, Grid, Pagination, Typography } from '@mui/material';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { clearStatus } from '../store/posts/postsSlice';
 import { PostsContainer } from '../components/PostsContainer';
 import { PostItem } from '../components/PostItem';
-import { getAllPosts } from '../store/posts/getAllPosts';
 import { useNavigate } from 'react-router';
-import { CAN_WRITE_POSTS, POST_CREATE } from '../utils/constants';
+import {
+  CAN_WRITE_POSTS,
+  POSTS_PER_PAGE,
+  POST_CREATE,
+} from '../utils/constants';
 import { Filter } from '../components/Filter';
+import { getPosts } from '../store/posts/getPosts';
+import { IFilterParams, ISearchParams } from '../utils/interfaces';
+import { useSearchParams } from 'react-router-dom';
+import { getPostsTags } from '../store/posts/getPostsTags';
 
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const snackbar = useSnackbar();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1');
+  const tags = searchParams.get('tags') || '';
+  const author = searchParams.get('author') || '';
+  const header = searchParams.get('header') || '';
+
   const { user } = useAppSelector((state) => state.user);
-  const { postsList, isLoading, status } = useAppSelector(
+  const { tags: tagsList } = useAppSelector((state) => state.posts);
+  const { postsList, totalPosts, isLoading, status } = useAppSelector(
     (state) => state.posts
   );
+  const [pagesCount, setPagesCount] = useState<number>(1);
 
   useEffect(() => {
-    dispatch(getAllPosts());
+    dispatch(getPostsTags());
   }, []);
+
+  useEffect(() => {
+    const queryParams: ISearchParams = {};
+    const filterParams: IFilterParams = {};
+    tags && (filterParams.tags = tags) && (queryParams.tags = tags);
+    header && (filterParams.header = header) && (queryParams.header = header);
+    author &&
+      (filterParams.author = parseInt(author)) &&
+      (queryParams.author = author);
+
+    dispatch(
+      getPosts({
+        ...filterParams,
+        offset: (currentPage - 1) * POSTS_PER_PAGE,
+        limit: POSTS_PER_PAGE,
+      })
+    );
+    setSearchParams({ page: currentPage.toString(), ...queryParams });
+  }, [currentPage, author, tags, header, dispatch, setSearchParams]);
+
+  useEffect(() => {
+    setPagesCount(Math.ceil(totalPosts / POSTS_PER_PAGE));
+  }, [totalPosts]);
 
   useEffect(() => {
     if (status) {
@@ -29,10 +68,31 @@ export const HomePage: FC = () => {
     }
   }, [status, snackbar]);
 
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    const queryParams: ISearchParams = {};
+
+    tags.length && (queryParams.tags = tags);
+    header && (queryParams.header = header);
+    author && (queryParams.author = author);
+    setSearchParams({ page: value.toString(), ...queryParams });
+  };
+
   return (
     <PostsContainer
       isLoading={isLoading}
-      left={<Filter />}
+      left={
+        <Filter
+          tags={tagsList}
+          queryTags={tags}
+          queryAuthor={author}
+          queryHeader={header}
+          setSearchParams={setSearchParams}
+          // onFilter={handleSetFilter}
+        />
+      }
       right={
         CAN_WRITE_POSTS.includes(user.role) && (
           <Button variant="outlined" onClick={() => navigate(POST_CREATE)}>
@@ -45,9 +105,21 @@ export const HomePage: FC = () => {
         <Typography variant="h3">Recent news</Typography>
       </Grid>
       {postsList.length ? (
-        postsList.map((post, idx) => (
-          <PostItem key={post.id || idx} post={post} id={post.id || idx} />
-        ))
+        <>
+          {postsList.map((post, idx) => (
+            <PostItem key={post.id || idx} post={post} id={post.id || idx} />
+          ))}
+          <Grid item alignSelf="flex-end">
+            <Pagination
+              count={pagesCount}
+              page={currentPage}
+              onChange={handleChangePage}
+              variant="outlined"
+              shape="rounded"
+              color="primary"
+            />
+          </Grid>
+        </>
       ) : (
         <Typography
           variant="h6"
