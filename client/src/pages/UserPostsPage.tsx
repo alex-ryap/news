@@ -1,6 +1,6 @@
-import { Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
-import { useLocation, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { PostItem } from '../components/PostItem';
 import { PostsContainer } from '../components/PostsContainer';
 import { useSnackbar } from '../hooks/useSnackbar';
@@ -8,6 +8,7 @@ import { IUserData } from '../store/admin/adminSlice';
 import { getUserPosts } from '../store/admin/getUserPosts';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { clearStatus } from '../store/posts/postsSlice';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 interface ILocationState {
   user: IUserData;
@@ -17,6 +18,7 @@ export const UserPostsPage: FC = () => {
   const { id } = useParams();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const snackbar = useSnackbar();
   const { user } = (location.state as ILocationState) || '';
   const { userPosts, isLoading, status } = useAppSelector(
@@ -37,6 +39,15 @@ export const UserPostsPage: FC = () => {
 
   return (
     <PostsContainer isLoading={isLoading}>
+      <Grid item>
+        <Button
+          startIcon={<ArrowBackIosNewIcon />}
+          variant="outlined"
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </Button>
+      </Grid>
       <Grid item>
         <Typography variant="h3">Posts of {user?.firstName}</Typography>
       </Grid>

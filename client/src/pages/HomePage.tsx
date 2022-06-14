@@ -42,11 +42,19 @@ export const HomePage: FC = () => {
   useEffect(() => {
     const queryParams: ISearchParams = {};
     const filterParams: IFilterParams = {};
-    tags && (filterParams.tags = tags) && (queryParams.tags = tags);
-    header && (filterParams.header = header) && (queryParams.header = header);
-    author &&
-      (filterParams.author = parseInt(author)) &&
-      (queryParams.author = author);
+
+    if (tags) {
+      filterParams.tags = tags;
+      queryParams.tags = tags;
+    }
+    if (header) {
+      filterParams.header = header;
+      queryParams.header = header;
+    }
+    if (author) {
+      filterParams.author = parseInt(author);
+      queryParams.author = author;
+    }
 
     dispatch(
       getPosts({

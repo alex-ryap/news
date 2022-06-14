@@ -31,18 +31,24 @@ export const SubscriptionsPage: FC = () => {
   const [pagesCount, setPagesCount] = useState<number>(1);
 
   useEffect(() => {
-    if (user.tags.length) {
-      const queryParams: ISearchParams = {};
-      const filterParams: IFilterParams = {};
-      tags
-        ? (filterParams.tags = tags) && (queryParams.tags = tags)
-        : (filterParams.tags = user.tags.join(',')) &&
-          (queryParams.tags = user.tags.join(','));
-      header && (filterParams.header = header) && (queryParams.header = header);
-      author &&
-        (filterParams.author = parseInt(author)) &&
-        (queryParams.author = author);
+    const queryParams: ISearchParams = {};
+    const filterParams: IFilterParams = {};
 
+    if (tags) {
+      filterParams.tags = tags;
+      queryParams.tags = tags;
+    }
+    if (header) {
+      filterParams.header = header;
+      queryParams.header = header;
+    }
+    if (author) {
+      filterParams.author = parseInt(author);
+      queryParams.author = author;
+    }
+    setSearchParams({ page: currentPage.toString(), ...queryParams });
+
+    if (user.tags.length) {
       dispatch(
         getPosts({
           ...filterParams,
@@ -50,7 +56,6 @@ export const SubscriptionsPage: FC = () => {
           limit: POSTS_PER_PAGE,
         })
       );
-      setSearchParams({ page: currentPage.toString(), ...queryParams });
     }
   }, [user.tags, currentPage, author, header, tags, dispatch, setSearchParams]);
 
