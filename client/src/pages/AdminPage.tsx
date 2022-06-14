@@ -1,25 +1,56 @@
-import { CircularProgress, Paper, Typography } from '@mui/material';
+import {
+  CircularProgress,
+  Grid,
+  IconButton,
+  Paper,
+  Typography,
+} from '@mui/material';
 import { Box } from '@mui/system';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { TagsList } from '../components/TagsList';
 import { UsersList } from '../components/UsersList';
 import { getUsers } from '../store/admin/getUsers';
+import AddIcon from '@mui/icons-material/Add';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { ModalAddTag } from '../components/ModalAddTag';
+import { useSnackbar } from '../hooks/useSnackbar';
+import { clearStatus } from '../store/posts/postsSlice';
+import { clearStatus as clearStatusAdmin } from '../store/admin/adminSlice';
 
 export const AdminPage: FC = () => {
   const dispatch = useAppDispatch();
-  const { users, isLoading: usersIsLoading } = useAppSelector(
-    (state) => state.admin
-  );
-  const { tags, isLoading: tagsIsLoading } = useAppSelector(
-    (state) => state.posts
-  );
+  const snackbar = useSnackbar();
+
+  const {
+    users,
+    isLoading: usersIsLoading,
+    status: userStatus,
+  } = useAppSelector((state) => state.admin);
+  const {
+    tags,
+    isLoading: tagsIsLoading,
+    status: tagsStatus,
+  } = useAppSelector((state) => state.posts);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!users.length) {
       dispatch(getUsers());
     }
   }, [dispatch, users]);
+
+  useEffect(() => {
+    if (tagsStatus) {
+      snackbar.showMessage(tagsStatus.type, tagsStatus.message, clearStatus);
+    }
+    if (userStatus) {
+      snackbar.showMessage(
+        userStatus.type,
+        userStatus.message,
+        clearStatusAdmin
+      );
+    }
+  }, [tagsStatus, userStatus, snackbar]);
 
   return (
     <Box
@@ -39,9 +70,19 @@ export const AdminPage: FC = () => {
         )}
       </Paper>
       <Paper elevation={2} sx={{ p: 2 }}>
-        <Typography variant="h5">Tags:</Typography>
+        <Grid container justifyContent="space-between">
+          <Grid item>
+            <Typography variant="h5">Tags:</Typography>
+          </Grid>
+          <Grid item>
+            <IconButton onClick={() => setIsOpen(true)}>
+              <AddIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
         {tagsIsLoading ? <CircularProgress /> : <TagsList tagsList={tags} />}
       </Paper>
+      <ModalAddTag isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </Box>
   );
 };
