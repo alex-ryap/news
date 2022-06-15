@@ -79,9 +79,15 @@ export const Filter: FC<IFilterProps> = ({
   const handleAcceptFilters = () => {
     const queryParams: ISearchParams = {};
 
-    selectedTags.length && (queryParams.tags = selectedTags.join(','));
-    header && (queryParams.header = header);
-    author && (queryParams.author = author);
+    if (selectedTags.length) {
+      queryParams.tags = selectedTags.join(',');
+    }
+    if (header) {
+      queryParams.header = header;
+    }
+    if (author) {
+      queryParams.author = author;
+    }
 
     setSearchParams({ page: '1', ...queryParams });
   };

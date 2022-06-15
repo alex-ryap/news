@@ -36,19 +36,12 @@ export const MyPostsPage: FC = () => {
     setFilteredPosts(postsList);
   }, [postsList]);
 
-  const handleFilterList = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    index: number,
-    state: PostState
-  ) => {
+  const handleFilterList = (index: number, state: PostState) => {
     setSelectedFilter(index);
     setFilteredPosts([...postsList.filter((post) => post.state === state)]);
   };
 
-  const handleResetFiltersList = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    index: number
-  ) => {
+  const handleResetFiltersList = (index: number) => {
     setSelectedFilter(index);
     setFilteredPosts(postsList);
   };
@@ -60,7 +53,7 @@ export const MyPostsPage: FC = () => {
         <List component="nav" aria-label="main post states">
           <ListItemButton
             selected={selectedFilter === 0}
-            onClick={(e) => handleResetFiltersList(e, 0)}
+            onClick={() => handleResetFiltersList(0)}
           >
             <ListItemIcon>
               <ArticleIcon />
@@ -69,7 +62,7 @@ export const MyPostsPage: FC = () => {
           </ListItemButton>
           <ListItemButton
             selected={selectedFilter === 1}
-            onClick={(e) => handleFilterList(e, 1, PostState.PUBLISHED)}
+            onClick={() => handleFilterList(1, PostState.PUBLISHED)}
           >
             <ListItemIcon>
               <InboxIcon />
@@ -78,7 +71,7 @@ export const MyPostsPage: FC = () => {
           </ListItemButton>
           <ListItemButton
             selected={selectedFilter === 2}
-            onClick={(e) => handleFilterList(e, 2, PostState.DRAFT)}
+            onClick={() => handleFilterList(2, PostState.DRAFT)}
           >
             <ListItemIcon>
               <DraftsIcon />

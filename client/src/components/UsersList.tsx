@@ -72,6 +72,12 @@ export const UsersList: FC<IUserListProps> = ({ usersList }) => {
     [dispatch, selectedUser, handleCloseModal]
   );
 
+  const handleShowUserPosts = (user: IUserData) => {
+    navigate(`/admin/${user.id}/posts`, {
+      state: { user },
+    });
+  };
+
   return (
     <>
       <TableContainer sx={{ maxHeight: '65vh', mt: 2 }}>
@@ -102,13 +108,7 @@ export const UsersList: FC<IUserListProps> = ({ usersList }) => {
                     <Grid container columnSpacing={1} justifyContent="center">
                       <Grid item>
                         <Tooltip title="Show user posts">
-                          <IconButton
-                            onClick={() =>
-                              navigate(`/admin/${user.id}/posts`, {
-                                state: { user },
-                              })
-                            }
-                          >
+                          <IconButton onClick={() => handleShowUserPosts(user)}>
                             <ArticleIcon />
                           </IconButton>
                         </Tooltip>

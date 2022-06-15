@@ -82,9 +82,15 @@ export const HomePage: FC = () => {
   ) => {
     const queryParams: ISearchParams = {};
 
-    tags.length && (queryParams.tags = tags);
-    header && (queryParams.header = header);
-    author && (queryParams.author = author);
+    if (tags.length) {
+      queryParams.tags = tags;
+    }
+    if (header) {
+      queryParams.header = header;
+    }
+    if (author) {
+      queryParams.author = author;
+    }
     setSearchParams({ page: value.toString(), ...queryParams });
   };
 
