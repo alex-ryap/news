@@ -72,8 +72,6 @@ router.put<{ id: number }, any, any, UpdateNewsRequest>(
       throw new createHttpError.BadRequest('Required: id');
     }
     const body = req.body;
-    console.log(id, body);
-
     AdminService.updateNews(id, body);
     res.sendStatus(204);
   }
