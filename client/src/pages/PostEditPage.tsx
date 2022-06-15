@@ -22,6 +22,8 @@ import { IPost } from '../utils/interfaces';
 import { updatePost } from '../store/posts/updatePost';
 import { createPost } from '../store/posts/createPost';
 import { deletePost } from '../store/posts/deletePost';
+import { deletePost as deletePostFromAdmin } from '../store/admin/deletePost';
+import { updatePost as updatePostFromAdmin } from '../store/admin/updatePost';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { clearStatus } from '../store/posts/postsSlice';
 import { HOME_PAGE } from '../utils/constants';
@@ -72,7 +74,11 @@ export const PostEditPage: FC = () => {
       publicationDate: Date.now(),
     };
     if (post?.id) {
-      dispatch(updatePost({ id: post.id, ...newPost }));
+      if (user.role === UserRole.WRITER) {
+        dispatch(updatePost({ id: post.id, ...newPost }));
+      } else if (user.role === UserRole.ADMIN) {
+        dispatch(updatePostFromAdmin({ id: post.id, ...newPost }));
+      }
     } else {
       dispatch(createPost(newPost));
     }
@@ -80,7 +86,11 @@ export const PostEditPage: FC = () => {
 
   const handleDeletePost = () => {
     if (post?.id) {
-      dispatch(deletePost(post.id));
+      if (user.role === UserRole.WRITER) {
+        dispatch(deletePost(post.id));
+      } else if (user.role === UserRole.ADMIN) {
+        dispatch(deletePostFromAdmin(post.id));
+      }
     }
   };
 
@@ -140,19 +150,21 @@ export const PostEditPage: FC = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item container justifyContent="space-between">
-          <Grid item>
-            <Typography variant="subtitle1">Publish</Typography>
+        {post?.state && (
+          <Grid item container justifyContent="space-between">
+            <Grid item>
+              <Typography variant="subtitle1">Publish</Typography>
+            </Grid>
+            <Grid item>
+              <Switch
+                checked={isPublicate}
+                onChange={() => setIsPublicate(!isPublicate)}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            </Grid>
           </Grid>
-          <Grid item>
-            <Switch
-              checked={isPublicate}
-              onChange={() => setIsPublicate(!isPublicate)}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-          </Grid>
-        </Grid>
-        <Grid item>
+        )}
+        <Grid item mt={2}>
           <Divider />
         </Grid>
         <Grid item container columnSpacing={1} justifyContent="flex-end">

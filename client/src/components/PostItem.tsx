@@ -91,14 +91,14 @@ export const PostItem: FC<IPostItemProps> = ({
             )}
         </CardContent>
         <CardActions sx={{ justifyContent: 'flex-end' }}>
+          {isEditable && (
+            <Button variant="text" onClick={handleEditPost}>
+              Edit post
+            </Button>
+          )}
           <Button variant="text" onClick={handleOpenPost}>
             Learn More
           </Button>
-          {isEditable && (
-            <Button variant="text" onClick={handleEditPost}>
-              Edit
-            </Button>
-          )}
         </CardActions>
       </Card>
     </Grid>

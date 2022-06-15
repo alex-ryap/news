@@ -1,5 +1,5 @@
 import { Button, Grid, Typography } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { PostItem } from '../components/PostItem';
 import { PostsContainer } from '../components/PostsContainer';
@@ -53,7 +53,12 @@ export const UserPostsPage: FC = () => {
       </Grid>
       {userPosts.length ? (
         userPosts.map((post, idx) => (
-          <PostItem key={post.id || idx} post={post} id={post.id || idx} />
+          <PostItem
+            key={post.id || idx}
+            post={post}
+            id={post.id || idx}
+            isEditable
+          />
         ))
       ) : (
         <Typography

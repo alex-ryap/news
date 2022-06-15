@@ -14,7 +14,7 @@ interface IPost {
   description: string;
   tags: string[];
   state: string;
-  publicataionDate: string;
+  publicationDate: number;
 }
 
 export const updatePost = createAsyncThunk<
