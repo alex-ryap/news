@@ -16,11 +16,14 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { FC, MouseEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  ADMIN_ONLY,
   ADMIN_PAGE,
+  ALL,
   HOME_PAGE,
   MY_POSTS_PAGE,
   PROFILE_PAGE,
   SUBSCRIPTIONS_PAGE,
+  WRITERS_ONLY,
 } from '../utils/constants';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { signOut } from '../store/auth/SignOut';
@@ -29,27 +32,27 @@ const pages = [
   {
     name: 'Home',
     link: HOME_PAGE,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     name: 'Subscriptions',
     link: SUBSCRIPTIONS_PAGE,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     name: 'My posts',
     link: MY_POSTS_PAGE,
-    access: ['writer', 'admin'],
+    access: WRITERS_ONLY,
   },
   {
     name: 'Profile',
     link: PROFILE_PAGE,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     name: 'Admin',
     link: ADMIN_PAGE,
-    access: ['admin'],
+    access: ADMIN_ONLY,
   },
 ];
 

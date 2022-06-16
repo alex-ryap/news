@@ -1,9 +1,15 @@
+import { UserRole } from './enums';
+
 // CONSTANTS
 export const USER_ROLES = {
   admin: 'Admin',
   writer: 'Writer',
   reader: 'Reader',
 };
+
+export const ADMIN_ONLY = [UserRole.ADMIN];
+export const WRITERS_ONLY = [UserRole.ADMIN, UserRole.WRITER];
+export const ALL = [UserRole.ADMIN, UserRole.WRITER, UserRole.READER];
 
 export const POSTS_PER_PAGE = 10;
 

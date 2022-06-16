@@ -7,8 +7,10 @@ import { ProfilePage } from './pages/ProfilePage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
 import { UserPostsPage } from './pages/UserPostsPage';
 import {
+  ADMIN_ONLY,
   ADMIN_PAGE,
   ADMIN_USER_POSTS,
+  ALL,
   HOME_PAGE,
   MY_POSTS_PAGE,
   POST_CREATE,
@@ -16,6 +18,7 @@ import {
   POST_ITEM_PAGE,
   PROFILE_PAGE,
   SUBSCRIPTIONS_PAGE,
+  WRITERS_ONLY,
 } from './utils/constants';
 import { IRoute } from './utils/interfaces';
 
@@ -23,46 +26,46 @@ export const privateRoutes: IRoute[] = [
   {
     path: HOME_PAGE,
     component: HomePage,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     path: SUBSCRIPTIONS_PAGE,
     component: SubscriptionsPage,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     path: MY_POSTS_PAGE,
     component: MyPostsPage,
-    access: ['writer', 'admin'],
+    access: WRITERS_ONLY,
   },
   {
     path: POST_CREATE,
     component: PostEditPage,
-    access: ['writer', 'admin'],
+    access: WRITERS_ONLY,
   },
   {
     path: POST_ITEM_PAGE,
     component: PostPage,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     path: POST_ITEM_EDIT_PAGE,
     component: PostEditPage,
-    access: ['writer', 'admin'],
+    access: WRITERS_ONLY,
   },
   {
     path: PROFILE_PAGE,
     component: ProfilePage,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
     path: ADMIN_PAGE,
     component: AdminPage,
-    access: ['admin'],
+    access: ADMIN_ONLY,
   },
   {
     path: ADMIN_USER_POSTS,
     component: UserPostsPage,
-    access: ['admin'],
+    access: ADMIN_ONLY,
   },
 ];

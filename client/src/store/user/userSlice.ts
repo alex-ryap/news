@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { StatusType } from '../../utils/enums';
+import { StatusType, UserRole } from '../../utils/enums';
 import { IRequestStatus, IUser } from '../../utils/interfaces';
 import { getAuthors } from './getAuthors';
 import { getUserData } from './getUserData';
@@ -30,7 +30,7 @@ const initialState: IUserState = {
     showFirstName: true,
     showLastName: true,
     showPhone: true,
-    role: '',
+    role: UserRole.READER,
   },
   authors: [],
   isLoading: false,

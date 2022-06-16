@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { PostState, StatusType } from './enums';
+import { PostState, StatusType, UserRole } from './enums';
 
 export interface IRoute {
   path: string;
@@ -65,5 +65,5 @@ export interface IUser {
   showFirstName: boolean;
   showLastName: boolean;
   showPhone: boolean;
-  role: string;
+  role: UserRole;
 }
