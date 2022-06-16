@@ -16,6 +16,8 @@ import { ModalAddTag } from '../components/ModalAddTag';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { clearStatus } from '../store/posts/postsSlice';
 import { clearStatus as clearStatusAdmin } from '../store/admin/adminSlice';
+import { getPosts } from '../store/posts/getPosts';
+import { getPostsTags } from '../store/posts/getPostsTags';
 
 export const AdminPage: FC = () => {
   const dispatch = useAppDispatch();
@@ -34,10 +36,9 @@ export const AdminPage: FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!users.length) {
-      dispatch(getUsers());
-    }
-  }, [dispatch, users]);
+    dispatch(getUsers());
+    dispatch(getPostsTags());
+  }, [dispatch]);
 
   useEffect(() => {
     if (tagsStatus) {

@@ -51,10 +51,8 @@ export const Filter: FC<IFilterProps> = ({
   const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!authors.length) {
-      dispatch(getAuthors());
-    }
-  }, [dispatch, authors]);
+    dispatch(getAuthors());
+  }, [dispatch]);
 
   const handleAddTag = (tag: string) => {
     setSelectedTags([...selectedTags, tag]);

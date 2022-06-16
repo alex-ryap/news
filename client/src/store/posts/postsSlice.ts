@@ -1,4 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AnyAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  isFullfiledAction,
+  isPendingAction,
+  isRejectedAction,
+} from '../../utils/commons';
 import { StatusType } from '../../utils/enums';
 import { IPost, IRequestStatus } from '../../utils/interfaces';
 import { createPost } from './createPost';
@@ -44,127 +49,57 @@ export const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getPosts.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
-      })
       .addCase(
         getPosts.fulfilled,
         (state, action: PayloadAction<IPostsResponse>) => {
-          state.isLoading = false;
           state.postsList = action.payload.list;
           state.totalPosts = action.payload.total;
         }
       )
-      .addCase(getPosts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
-        };
-      })
-      .addCase(getPostsTags.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
-      })
       .addCase(
         getPostsTags.fulfilled,
         (state, action: PayloadAction<string[]>) => {
-          state.isLoading = false;
           state.tags = action.payload;
         }
       )
-      .addCase(getPostsTags.rejected, (state, action) => {
-        state.isLoading = false;
-        state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
-        };
-      })
-      .addCase(getAllPosts.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
-      })
       .addCase(
         getAllPosts.fulfilled,
         (state, action: PayloadAction<IPost[]>) => {
-          state.isLoading = false;
           state.postsList = action.payload;
         }
       )
-      .addCase(getAllPosts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
-        };
-      })
-      .addCase(getMyPosts.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
-      })
       .addCase(
         getMyPosts.fulfilled,
         (state, action: PayloadAction<IPost[]>) => {
-          state.isLoading = false;
           state.postsList = action.payload;
         }
       )
-      .addCase(getMyPosts.rejected, (state, action) => {
-        state.isLoading = false;
-        state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
-        };
-      })
-      .addCase(createPost.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
-      })
       .addCase(createPost.fulfilled, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
         state.status = {
           type: StatusType.SUCCESS,
           message: action.payload,
         };
-      })
-      .addCase(createPost.rejected, (state, action) => {
-        state.isLoading = false;
-        state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
-        };
-      })
-      .addCase(updatePost.pending, (state) => {
-        state.isLoading = true;
-        state.status = null;
       })
       .addCase(updatePost.fulfilled, (state, action: PayloadAction<string>) => {
-        state.isLoading = false;
         state.status = {
           type: StatusType.SUCCESS,
           message: action.payload,
         };
       })
-      .addCase(updatePost.rejected, (state, action) => {
-        state.isLoading = false;
+      .addCase(deletePost.fulfilled, (state, action: PayloadAction<string>) => {
         state.status = {
-          type: StatusType.ERROR,
-          message: action.payload || '',
+          type: StatusType.SUCCESS,
+          message: action.payload,
         };
       })
-      .addCase(deletePost.pending, (state) => {
+      .addMatcher(isPendingAction, (state) => {
         state.isLoading = true;
         state.status = null;
       })
-      .addCase(deletePost.fulfilled, (state, action: PayloadAction<string>) => {
+      .addMatcher(isFullfiledAction, (state) => {
         state.isLoading = false;
-        state.status = {
-          type: StatusType.SUCCESS,
-          message: action.payload,
-        };
       })
-      .addCase(deletePost.rejected, (state, action) => {
+      .addMatcher(isRejectedAction, (state, action: AnyAction) => {
         state.isLoading = false;
         state.status = {
           type: StatusType.ERROR,

@@ -39,8 +39,6 @@ export const getPosts = createAsyncThunk<
       },
     });
 
-    console.log(response.data);
-
     return response.data.news;
   } catch (e) {
     return rejectWithValue(handleError(e as Error));

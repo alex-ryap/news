@@ -1,6 +1,9 @@
+import { AnyAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { ERRORS } from './constants';
+import { FulfilledAction, PendingAction, RejectedAction } from './types';
 
+// changed tabs
 export function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -8,6 +11,7 @@ export function a11yProps(index: number) {
   };
 }
 
+// error handling
 export const handleError = (
   error: Error,
   errorsMessages?: Map<number, string>
@@ -24,4 +28,21 @@ export const handleError = (
     }
   }
   return 'Something wrong...';
+};
+
+// common actions handling
+export const isPendingAction = (action: AnyAction): action is PendingAction => {
+  return action.type.endsWith('/pending');
+};
+
+export const isFullfiledAction = (
+  action: AnyAction
+): action is FulfilledAction => {
+  return action.type.endsWith('/fulfilled');
+};
+
+export const isRejectedAction = (
+  action: AnyAction
+): action is RejectedAction => {
+  return action.type.endsWith('/rejected');
 };
