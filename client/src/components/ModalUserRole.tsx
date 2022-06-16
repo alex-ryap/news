@@ -13,7 +13,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
-import { USER_ROLES } from '../utils/constants';
+import { UserRole } from '../utils/enums';
 
 interface ModalUserRoleProps {
   role: string;
@@ -55,8 +55,8 @@ export const ModalUserRole: FC<ModalUserRoleProps> = ({
               label="Role"
               onChange={handleChangeUserRole}
             >
-              {Object.entries(USER_ROLES).map(([key, value]) => (
-                <MenuItem key={key} value={key}>
+              {Object.values(UserRole).map((value, idx) => (
+                <MenuItem key={idx} value={value}>
                   {value}
                 </MenuItem>
               ))}

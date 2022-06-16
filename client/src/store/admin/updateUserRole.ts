@@ -37,7 +37,7 @@ export const updateUserRole = createAsyncThunk<
         }
       );
       dispatch(updateUserRoleFromStore({ id, role }));
-      return response.data;
+      return 'User role updated';
     } catch (e) {
       return rejectWithValue(handleError(e as Error, errorsMessages));
     }

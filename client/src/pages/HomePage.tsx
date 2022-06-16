@@ -6,11 +6,7 @@ import { clearStatus } from '../store/posts/postsSlice';
 import { PostsContainer } from '../components/PostsContainer';
 import { PostItem } from '../components/PostItem';
 import { useNavigate } from 'react-router';
-import {
-  CAN_WRITE_POSTS,
-  POSTS_PER_PAGE,
-  POST_CREATE,
-} from '../utils/constants';
+import { POSTS_PER_PAGE, POST_CREATE, WRITERS_ONLY } from '../utils/constants';
 import { Filter } from '../components/Filter';
 import { getPosts } from '../store/posts/getPosts';
 import { IFilterParams, ISearchParams } from '../utils/interfaces';
@@ -108,7 +104,7 @@ export const HomePage: FC = () => {
         />
       }
       right={
-        CAN_WRITE_POSTS.includes(user.role) && (
+        WRITERS_ONLY.includes(user.role) && (
           <Button variant="outlined" onClick={() => navigate(POST_CREATE)}>
             Create post
           </Button>
