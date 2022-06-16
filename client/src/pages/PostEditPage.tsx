@@ -18,14 +18,18 @@ import SaveIcon from '@mui/icons-material/Save';
 import { FC, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { IPost } from '../utils/interfaces';
+import { IPost, IRequestStatus } from '../utils/interfaces';
 import { updatePost } from '../store/posts/updatePost';
 import { createPost } from '../store/posts/createPost';
 import { deletePost } from '../store/posts/deletePost';
+import { deletePost as deletePostFromAdmin } from '../store/admin/deletePost';
+import { updatePost as updatePostFromAdmin } from '../store/admin/updatePost';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { clearStatus } from '../store/posts/postsSlice';
-import { HOME_PAGE } from '../utils/constants';
-import { PostState, UserRole } from '../utils/enums';
+import { clearStatus as clearStatusAdmin } from '../store/admin/adminSlice';
+import { PostState, StatusType, UserRole } from '../utils/enums';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { ActionCreatorWithoutPayload } from '@reduxjs/toolkit';
 
 interface ILocationState {
   post: IPost;
@@ -35,7 +39,8 @@ export const PostEditPage: FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { post } = (location.state as ILocationState) || {};
-  const { tags, status } = useAppSelector((state) => state.posts);
+  const { status: adminStatus } = useAppSelector((state) => state.admin);
+  const { tags, status: postsStatus } = useAppSelector((state) => state.posts);
   const { user } = useAppSelector((state) => state.user);
   const [header, setHeader] = useState<string>(post?.header || '');
   const [description, setDescription] = useState<string>(
@@ -43,17 +48,32 @@ export const PostEditPage: FC = () => {
   );
   const [selectedTags, setSelectedTags] = useState<string[]>(post?.tags || []);
   const [isPublicate, setIsPublicate] = useState<boolean>(
-    post?.state === PostState.PUBLISHED ? true : false
+    post?.state === PostState.PUBLISHED || user.role === UserRole.ADMIN
+      ? true
+      : false
   );
   const navigate = useNavigate();
   const snackbar = useSnackbar();
 
   useEffect(() => {
-    if (status) {
-      snackbar.showMessage(status.type, status.message, clearStatus);
-      navigate(HOME_PAGE);
+    const showSnack = (
+      snack: IRequestStatus,
+      clearStatus: ActionCreatorWithoutPayload<string>
+    ) => {
+      snackbar.showMessage(snack.type, snack.message, clearStatus);
+      if (snack.type === StatusType.SUCCESS) {
+        navigate(-1);
+      }
+    };
+
+    if (postsStatus) {
+      showSnack(postsStatus, clearStatus);
     }
-  }, [status, snackbar, navigate]);
+
+    if (adminStatus) {
+      showSnack(adminStatus, clearStatusAdmin);
+    }
+  }, [adminStatus, postsStatus, snackbar, navigate]);
 
   const handleChangeTags = (event: SelectChangeEvent<typeof tags>) => {
     const {
@@ -71,7 +91,11 @@ export const PostEditPage: FC = () => {
       publicationDate: Date.now(),
     };
     if (post?.id) {
-      dispatch(updatePost({ id: post.id, ...newPost }));
+      if (user.role === UserRole.WRITER) {
+        dispatch(updatePost({ id: post.id, ...newPost }));
+      } else if (user.role === UserRole.ADMIN) {
+        dispatch(updatePostFromAdmin({ id: post.id, ...newPost }));
+      }
     } else {
       dispatch(createPost(newPost));
     }
@@ -79,16 +103,29 @@ export const PostEditPage: FC = () => {
 
   const handleDeletePost = () => {
     if (post?.id) {
-      dispatch(deletePost(post.id));
+      if (user.role === UserRole.WRITER) {
+        dispatch(deletePost(post.id));
+      } else if (user.role === UserRole.ADMIN) {
+        dispatch(deletePostFromAdmin(post.id));
+      }
     }
   };
 
   return (
-    <Box sx={{ margin: '0 auto', maxWidth: '600px' }}>
+    <Box sx={{ margin: '0 auto', maxWidth: '800px' }}>
       <Grid container direction="column" rowSpacing={2}>
         <Grid item>
-          <Typography variant="h4">
-            {post?.header ? 'Edit post' : 'Create post'}
+          <Button
+            startIcon={<ArrowBackIosNewIcon />}
+            variant="outlined"
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </Button>
+        </Grid>
+        <Grid item alignSelf="flex-end">
+          <Typography variant="h3">
+            {post?.header ? 'Edit post' : 'Create new post'}
           </Typography>
         </Grid>
         <Grid item>
@@ -142,7 +179,7 @@ export const PostEditPage: FC = () => {
             />
           </Grid>
         </Grid>
-        <Grid item>
+        <Grid item mt={2}>
           <Divider />
         </Grid>
         <Grid item container columnSpacing={1} justifyContent="flex-end">

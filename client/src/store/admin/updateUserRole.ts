@@ -1,9 +1,13 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
 import { updateUserRoleFromStore } from './adminSlice';
+import { handleError } from '../../utils/commons';
+
+const errorsMessages = new Map<number, string>();
+errorsMessages.set(400, 'ID or role not defined');
+errorsMessages.set(404, 'User not found');
 
 export const updateUserRole = createAsyncThunk<
   string,
@@ -33,9 +37,9 @@ export const updateUserRole = createAsyncThunk<
         }
       );
       dispatch(updateUserRoleFromStore({ id, role }));
-      return response.data;
+      return 'User role updated';
     } catch (e) {
-      return rejectWithValue((e as IError).message);
+      return rejectWithValue(handleError(e as Error, errorsMessages));
     }
   }
 );

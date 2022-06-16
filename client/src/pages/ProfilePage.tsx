@@ -11,6 +11,7 @@ import {
 import { FC, FormEvent, useEffect, useState } from 'react';
 import { useSnackbar } from '../hooks/useSnackbar';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { getUserData } from '../store/user/getUserData';
 import { updateUserData } from '../store/user/updateUserData';
 import { clearStatus } from '../store/user/userSlice';
 
@@ -27,6 +28,10 @@ export const ProfilePage: FC = () => {
   const [showPhone, setShowPhone] = useState<boolean>(user.showPhone);
 
   const snackbar = useSnackbar();
+
+  useEffect(() => {
+    dispatch(getUserData());
+  }, [dispatch]);
 
   const handleSave = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

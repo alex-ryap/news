@@ -7,6 +7,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -15,40 +16,43 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { FC, MouseEvent, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  ADMIN_ONLY,
+  ADMIN_PAGE,
+  ALL,
   HOME_PAGE,
-  POST_CREATE,
+  MY_POSTS_PAGE,
   PROFILE_PAGE,
-  TAGS_PAGE,
-  USERS_PAGE,
+  SUBSCRIPTIONS_PAGE,
+  WRITERS_ONLY,
 } from '../utils/constants';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { signOut } from '../store/auth/SignOut';
 
 const pages = [
   {
-    name: 'All News',
+    name: 'Home',
     link: HOME_PAGE,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
+  },
+  {
+    name: 'Subscriptions',
+    link: SUBSCRIPTIONS_PAGE,
+    access: ALL,
+  },
+  {
+    name: 'My posts',
+    link: MY_POSTS_PAGE,
+    access: WRITERS_ONLY,
   },
   {
     name: 'Profile',
     link: PROFILE_PAGE,
-    access: ['reader', 'writer', 'admin'],
+    access: ALL,
   },
   {
-    name: 'Users',
-    link: USERS_PAGE,
-    access: ['admin'],
-  },
-  {
-    name: 'Tags',
-    link: TAGS_PAGE,
-    access: ['admin'],
-  },
-  {
-    name: 'Add News',
-    link: POST_CREATE,
-    access: ['writer', 'admin'],
+    name: 'Admin',
+    link: ADMIN_PAGE,
+    access: ADMIN_ONLY,
   },
 ];
 
@@ -184,13 +188,15 @@ export const Header: FC = () => {
                 </Button>
               ))}
           </Box>
-          <IconButton
-            aria-label="Sign out"
-            sx={{ color: 'white' }}
-            onClick={() => handleSignOut()}
-          >
-            <LogoutIcon />
-          </IconButton>
+          <Tooltip title="Logout">
+            <IconButton
+              aria-label="Sign out"
+              sx={{ color: 'white' }}
+              onClick={() => handleSignOut()}
+            >
+              <LogoutIcon />
+            </IconButton>
+          </Tooltip>
         </Toolbar>
       </Container>
     </AppBar>

@@ -1,26 +1,70 @@
-import { Tab, Tabs } from '@mui/material';
-import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { TabAllPosts } from '../components/TabAllPosts';
-import { TabPanel } from '../components/TabPanel';
-import { a11yProps } from '../utils/commons';
-import { TabMyPosts } from '../components/TabMyPosts';
+import { Button, Grid, Pagination, Typography } from '@mui/material';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { clearStatus } from '../store/user/userSlice';
 import { useSnackbar } from '../hooks/useSnackbar';
+import { clearStatus } from '../store/posts/postsSlice';
+import { PostsContainer } from '../components/PostsContainer';
+import { PostItem } from '../components/PostItem';
+import { useNavigate } from 'react-router';
+import { POSTS_PER_PAGE, POST_CREATE, WRITERS_ONLY } from '../utils/constants';
+import { Filter } from '../components/Filter';
+import { getPosts } from '../store/posts/getPosts';
+import { IFilterParams, ISearchParams } from '../utils/interfaces';
+import { useSearchParams } from 'react-router-dom';
 import { getPostsTags } from '../store/posts/getPostsTags';
-import { TabSubscriptions } from '../components/TabSubscriptions';
-
-const canWritePosts = ['writer', 'admin'];
 
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const snackbar = useSnackbar();
-  const { user, status } = useAppSelector((state) => state.user);
-  const [tab, setTab] = useState<number>(0);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1');
+  const tags = searchParams.get('tags') || '';
+  const author = searchParams.get('author') || '';
+  const header = searchParams.get('header') || '';
+
+  const { user } = useAppSelector((state) => state.user);
+  const { tags: tagsList } = useAppSelector((state) => state.posts);
+  const { postsList, totalPosts, isLoading, status } = useAppSelector(
+    (state) => state.posts
+  );
+  const [pagesCount, setPagesCount] = useState<number>(1);
 
   useEffect(() => {
     dispatch(getPostsTags());
-  }, [dispatch]);
+  }, []);
+
+  useEffect(() => {
+    const queryParams: ISearchParams = {};
+    const filterParams: IFilterParams = {};
+
+    if (tags) {
+      filterParams.tags = tags;
+      queryParams.tags = tags;
+    }
+    if (header) {
+      filterParams.header = header;
+      queryParams.header = header;
+    }
+    if (author) {
+      filterParams.author = parseInt(author);
+      queryParams.author = author;
+    }
+
+    dispatch(
+      getPosts({
+        ...filterParams,
+        offset: (currentPage - 1) * POSTS_PER_PAGE,
+        limit: POSTS_PER_PAGE,
+      })
+    );
+    setSearchParams({ page: currentPage.toString(), ...queryParams });
+  }, [currentPage, author, tags, header, dispatch, setSearchParams]);
+
+  useEffect(() => {
+    setPagesCount(Math.ceil(totalPosts / POSTS_PER_PAGE));
+  }, [totalPosts]);
 
   useEffect(() => {
     if (status) {
@@ -28,45 +72,74 @@ export const HomePage: FC = () => {
     }
   }, [status, snackbar]);
 
-  const handleChangeTab = useCallback(
-    (event: SyntheticEvent, newValue: number) => {
-      setTab(newValue);
-    },
-    []
-  );
+  const handleChangePage = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    const queryParams: ISearchParams = {};
+
+    if (tags.length) {
+      queryParams.tags = tags;
+    }
+    if (header) {
+      queryParams.header = header;
+    }
+    if (author) {
+      queryParams.author = author;
+    }
+    setSearchParams({ page: value.toString(), ...queryParams });
+  };
 
   return (
-    <>
-      <Tabs value={tab} onChange={handleChangeTab}>
-        <Tab
-          label="All news"
-          {...a11yProps(0)}
-          sx={{ flexGrow: 1, maxWidth: 'none' }}
+    <PostsContainer
+      isLoading={isLoading}
+      left={
+        <Filter
+          tags={tagsList}
+          queryTags={tags}
+          queryAuthor={author}
+          queryHeader={header}
+          setSearchParams={setSearchParams}
+          // onFilter={handleSetFilter}
         />
-        <Tab
-          label="Subscriptions"
-          {...a11yProps(1)}
-          sx={{ flexGrow: 1, maxWidth: 'none' }}
-        />
-        {canWritePosts.includes(user.role) && (
-          <Tab
-            label="My news"
-            {...a11yProps(2)}
-            sx={{ flexGrow: 1, maxWidth: 'none' }}
-          />
-        )}
-      </Tabs>
-      <TabPanel value={tab} index={0}>
-        <TabAllPosts />
-      </TabPanel>
-      <TabPanel value={tab} index={1}>
-        <TabSubscriptions />
-      </TabPanel>
-      {canWritePosts.includes(user.role) && (
-        <TabPanel value={tab} index={2}>
-          <TabMyPosts />
-        </TabPanel>
+      }
+      right={
+        WRITERS_ONLY.includes(user.role) && (
+          <Button variant="outlined" onClick={() => navigate(POST_CREATE)}>
+            Create post
+          </Button>
+        )
+      }
+    >
+      <Grid item>
+        <Typography variant="h3">Recent news</Typography>
+      </Grid>
+      {postsList.length ? (
+        <>
+          {postsList.map((post, idx) => (
+            <PostItem key={post.id || idx} post={post} id={post.id || idx} />
+          ))}
+          <Grid item alignSelf="flex-end">
+            <Pagination
+              count={pagesCount}
+              page={currentPage}
+              onChange={handleChangePage}
+              variant="outlined"
+              shape="rounded"
+              color="primary"
+            />
+          </Grid>
+        </>
+      ) : (
+        <Typography
+          variant="h6"
+          color="text.secondary"
+          textAlign="center"
+          mt={5}
+        >
+          No news
+        </Typography>
       )}
-    </>
+    </PostsContainer>
   );
 };

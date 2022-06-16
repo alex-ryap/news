@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
+import { handleError } from '../../utils/commons';
 
 interface IPost {
   header: string;
@@ -35,6 +35,6 @@ export const createPost = createAsyncThunk<
     );
     return 'Post created';
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error));
   }
 });

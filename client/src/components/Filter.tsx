@@ -1,4 +1,8 @@
 import {
+  Accordion,
+  AccordionActions,
+  AccordionDetails,
+  AccordionSummary,
   Button,
   Checkbox,
   Chip,
@@ -9,23 +13,42 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  Stack,
   TextField,
   Typography,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FC, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { getAuthors } from '../store/user/getAuthors';
 import { getPosts } from '../store/posts/getPosts';
+import { getPostsTags } from '../store/posts/getPostsTags';
+import { IFilterParams, ISearchParams } from '../utils/interfaces';
+import { URLSearchParamsInit } from 'react-router-dom';
 
-export const Filter: FC = () => {
+interface IFilterProps {
+  tags: string[];
+  queryTags: string;
+  queryAuthor: string;
+  queryHeader: string;
+  setSearchParams: (params: URLSearchParamsInit) => void;
+}
+
+export const Filter: FC<IFilterProps> = ({
+  tags,
+  queryTags,
+  queryAuthor,
+  queryHeader,
+  setSearchParams,
+}) => {
   const dispatch = useAppDispatch();
   const { authors } = useAppSelector((state) => state.user);
-  const { tags } = useAppSelector((state) => state.posts);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [containedText, setContainedText] = useState<string>('');
-  const [isRead, setIsRead] = useState<boolean>(false);
-  const [author, setAuthor] = useState<string>('');
+  const [selectedTags, setSelectedTags] = useState<string[]>(
+    queryTags ? queryTags.split(',') : []
+  );
+  const [header, setHeader] = useState<string>(queryHeader);
+  // const [isRead, setIsRead] = useState<boolean>(false);
+  const [author, setAuthor] = useState<string>(queryAuthor);
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     dispatch(getAuthors());
@@ -40,101 +63,120 @@ export const Filter: FC = () => {
   };
 
   const handleSelectAuthor = (event: SelectChangeEvent) => {
-    setAuthor(event.target.value);
+    setAuthor(event.target.value.toString());
   };
 
   const handleClearFilters = () => {
     setSelectedTags([]);
     setAuthor('');
-    setIsRead(false);
-    setContainedText('');
-    dispatch(getPosts({}));
+    // setIsRead(false);
+    setHeader('');
+    setSearchParams({ page: '1' });
   };
 
   const handleAcceptFilters = () => {
-    dispatch(
-      getPosts({
-        tags: selectedTags.join(', '),
-        header: containedText,
-        author,
-      })
-    );
+    const queryParams: ISearchParams = {};
+
+    if (selectedTags.length) {
+      queryParams.tags = selectedTags.join(',');
+    }
+    if (header) {
+      queryParams.header = header;
+    }
+    if (author) {
+      queryParams.author = author;
+    }
+
+    setSearchParams({ page: '1', ...queryParams });
   };
 
   return (
-    <Grid mt={2} mb={2} container columnSpacing={1} alignItems="flex-start">
-      <Grid
-        maxWidth="50%"
-        item
-        container
-        alignItems="center"
-        flexWrap="wrap"
-        columnSpacing={2}
+    <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1a-content"
+        id="panel1a-header"
       >
-        <Grid item>
-          <Typography variant="subtitle1">Tags:</Typography>
-        </Grid>
-        <Grid item>
-          <Stack spacing={1} direction="row" alignItems="center">
+        <Typography variant="subtitle1">Filters</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Grid
+          container
+          rowSpacing={2}
+          direction="column"
+          alignItems="flex-start"
+        >
+          <Grid item container spacing={1} flexWrap="wrap">
+            <Grid item>
+              <Typography variant="subtitle1">Tags:</Typography>
+            </Grid>
             {tags.map((tag, idx) =>
               selectedTags.includes(tag) ? (
-                <Chip
-                  key={idx}
-                  label={tag}
-                  onDelete={() => handleDeleteTag(tag)}
-                />
+                <Grid item key={idx}>
+                  <Chip
+                    label={tag}
+                    color="primary"
+                    onDelete={() => handleDeleteTag(tag)}
+                  />
+                </Grid>
               ) : (
-                <Chip
-                  key={idx}
-                  label={tag}
-                  onClick={() => handleAddTag(tag)}
-                  variant="outlined"
-                />
+                <Grid item key={idx}>
+                  <Chip
+                    label={tag}
+                    onClick={() => handleAddTag(tag)}
+                    variant="outlined"
+                  />
+                </Grid>
               )
             )}
-          </Stack>
+          </Grid>
+          <Grid item container direction="column" rowSpacing={2}>
+            <Grid item>
+              <FormControl fullWidth size="small">
+                <InputLabel id="author">Author</InputLabel>
+                <Select
+                  labelId="author"
+                  id="author-select"
+                  value={author}
+                  label="Author"
+                  onChange={handleSelectAuthor}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {authors.map((author, idx) => (
+                    <MenuItem key={idx} value={author.id}>
+                      {`${author?.firstName} ${author?.lastName}`}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <TextField
+                fullWidth
+                label="Contain text"
+                variant="outlined"
+                size="small"
+                value={header}
+                onChange={(e) => setHeader(e.target.value)}
+              />
+            </Grid>
+            {/* <Grid item>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={isRead}
+                    onChange={() => setIsRead(!isRead)}
+                  />
+                }
+                label="Readed posts"
+              />
+            </Grid> */}
+          </Grid>
         </Grid>
-      </Grid>
-      <Grid item container direction="column" maxWidth="50%" rowSpacing={1}>
-        <Grid item>
-          <FormControl fullWidth size="small">
-            <InputLabel id="author">Author</InputLabel>
-            <Select
-              labelId="author"
-              id="author-select"
-              value={author}
-              label="Author"
-              onChange={handleSelectAuthor}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {authors.map((author, idx) => (
-                <MenuItem key={idx} value={author.id}>
-                  {`${author?.firstName} ${author?.lastName}`}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <TextField
-            fullWidth
-            label="Contain text"
-            variant="outlined"
-            size="small"
-            value={containedText}
-            onChange={(e) => setContainedText(e.target.value)}
-          />
-        </Grid>
-        <Grid item>
-          <FormControlLabel
-            control={
-              <Checkbox checked={isRead} onChange={() => setIsRead(!isRead)} />
-            }
-            label="Readed posts"
-          />
-        </Grid>
+      </AccordionDetails>
+      <AccordionActions>
         <Grid item container justifyContent="flex-end" columnSpacing={1}>
           <Grid item>
             <Button variant="outlined" onClick={handleClearFilters}>
@@ -147,7 +189,7 @@ export const Filter: FC = () => {
             </Button>
           </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </AccordionActions>
+    </Accordion>
   );
 };

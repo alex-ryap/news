@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { SERVER_ADDR, TOKEN } from '../../utils/constants';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
 import { resetAdminSlice } from '../admin/adminSlice';
 import { resetAuthSlice } from './authSlice';
 import { resetUserSlice } from '../user/userSlice';
 import { resetPostsSlice } from '../posts/postsSlice';
+import { handleError } from '../../utils/commons';
 
 export const signOut = createAsyncThunk<
   string,
@@ -34,6 +34,6 @@ export const signOut = createAsyncThunk<
     dispatch(resetAdminSlice());
     return 'Success logout';
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error));
   }
 });

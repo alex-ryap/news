@@ -8,6 +8,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Tooltip,
 } from '@mui/material';
 import { FC, useCallback, useState } from 'react';
 import { useAppDispatch } from '../store/hooks';
@@ -101,14 +102,18 @@ export const TagsList: FC<ITagsListProps> = ({ tagsList }) => {
                   <TableCell>
                     <Grid container columnSpacing={1} justifyContent="center">
                       <Grid item>
-                        <IconButton onClick={() => handleOpenModal(tag)}>
-                          <EditIcon />
-                        </IconButton>
+                        <Tooltip title="Edit tag">
+                          <IconButton onClick={() => handleOpenModal(tag)}>
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Grid>
                       <Grid item>
-                        <IconButton onClick={() => handleTagDelete(tag)}>
-                          <DeleteIcon />
-                        </IconButton>
+                        <Tooltip title="Delete tag">
+                          <IconButton onClick={() => handleTagDelete(tag)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Grid>
                     </Grid>
                   </TableCell>

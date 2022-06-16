@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
+import { handleError } from '../../utils/commons';
+
+const errorsMessages = new Map<number, string>();
+errorsMessages.set(400, 'ID not defined');
+errorsMessages.set(404, 'Post not found');
 
 interface IPost {
   id: number;
@@ -10,7 +14,7 @@ interface IPost {
   description: string;
   tags: string[];
   state: string;
-  publicataionDate: string;
+  publicationDate: number;
 }
 
 export const updatePost = createAsyncThunk<
@@ -38,7 +42,7 @@ export const updatePost = createAsyncThunk<
       );
       return 'Post updated';
     } catch (e) {
-      return rejectWithValue((e as IError).message);
+      return rejectWithValue(handleError(e as Error, errorsMessages));
     }
   }
 );

@@ -1,4 +1,4 @@
-import { Button, Grid, IconButton, Stack, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { FC, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -26,7 +26,7 @@ export const PostPage: FC = () => {
   };
 
   return (
-    <Box sx={{ margin: '0 auto', maxWidth: '600px' }}>
+    <Box sx={{ margin: '0 auto', maxWidth: '800px' }}>
       <Grid container direction="column" rowSpacing={1}>
         <Grid item>
           <Button

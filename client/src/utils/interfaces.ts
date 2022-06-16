@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { PostState, StatusType } from './enums';
+import { PostState, StatusType, UserRole } from './enums';
 
 export interface IRoute {
   path: string;
@@ -7,8 +7,16 @@ export interface IRoute {
   access: string[];
 }
 
-export interface IError {
-  message: string;
+export interface IFilterParams {
+  tags?: string;
+  header?: string;
+  author?: number;
+}
+
+export interface ISearchParams {
+  tags?: string;
+  header?: string;
+  author?: string;
 }
 
 export interface IRequestStatus {
@@ -57,5 +65,5 @@ export interface IUser {
   showFirstName: boolean;
   showLastName: boolean;
   showPhone: boolean;
-  role: string;
+  role: UserRole;
 }

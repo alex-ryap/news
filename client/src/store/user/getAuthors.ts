@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
 import { IAuthor } from './userSlice';
+import { handleError } from '../../utils/commons';
 
 export const getAuthors = createAsyncThunk<
   IAuthor[],
@@ -22,6 +22,6 @@ export const getAuthors = createAsyncThunk<
     });
     return response.data;
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error));
   }
 });

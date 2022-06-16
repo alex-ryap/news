@@ -1,12 +1,15 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { SERVER_ADDR } from '../../utils/constants';
-import { IError } from '../../utils/interfaces';
 import { RootState } from '../store';
-import { IUserPosts } from './adminSlice';
+import { IUserPost } from './adminSlice';
+import { handleError } from '../../utils/commons';
+
+const errorsMessages = new Map<number, string>();
+errorsMessages.set(404, 'User not found');
 
 export const getUserPosts = createAsyncThunk<
-  IUserPosts[],
+  IUserPost[],
   number,
   {
     state: RootState;
@@ -22,6 +25,6 @@ export const getUserPosts = createAsyncThunk<
     });
     return response.data;
   } catch (e) {
-    return rejectWithValue((e as IError).message);
+    return rejectWithValue(handleError(e as Error, errorsMessages));
   }
 });
